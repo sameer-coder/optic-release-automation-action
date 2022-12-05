@@ -26942,7 +26942,7 @@ const getPRBody = (
 
   logInfo(`Long PRbody lenght is ${newprbody.length}`)
 
-  if (newprbody.length > 50000) {
+  if (newprbody.length > 60000) {
     const omissionText =
       '. *Note: Part of the release notes have been omitted from this message, as the content exceeds the size limit*'
     let newprbody1 = _truncate(newprbody, {
@@ -26950,6 +26950,7 @@ const getPRBody = (
       omission: omissionText,
     })
     logInfo(`truncated PRbody lenght is ${newprbody1.length}`)
+    return newprbody1
   }
 
   return newprbody
