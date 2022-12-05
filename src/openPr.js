@@ -50,7 +50,6 @@ const getPRBody = (
   }
 
   logInfo(`Long PRbody lenght is ${newprbody.length}`)
-  logInfo(`Long PRbody is ${newprbody}`)
 
   if (newprbody.length > 60000) {
     const omissionText =
@@ -60,7 +59,6 @@ const getPRBody = (
       omission: omissionText,
     })
     logInfo(`truncated PRbody lenght is ${newprbody1.length}`)
-    logInfo(`truncated PRbody  is ${newprbody1}`)
   }
 
   return newprbody
