@@ -138,9 +138,10 @@ logInfo('before getPRBody!')
     )
 
     // logInfo(JSON.stringify(response))
-    logInfo(JSON.stringify(response.statusCode))
-    logInfo(JSON.stringify(response.error))
-    logInfo(JSON.stringify(response.message))
+    logInfo(JSON.stringify(response?.statusCode || 'status'))
+    logInfo(JSON.stringify(response?.status || 'status'))
+    logInfo(JSON.stringify(response?.error || 'error'))
+    logInfo(JSON.stringify(response?.message || 'message'))
   } catch (err) {
     let message = `Unable to create the pull request ${err.message}`
     logInfo(message)

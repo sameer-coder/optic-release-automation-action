@@ -26233,7 +26233,7 @@ module.exports = async function ({ github, context, inputs, packageVersion }) {
 const { debug, error, info, warning } = __nccwpck_require__(2186)
 
 const stringify = msg =>
-  typeof msg === 'string' ? msg : msg?.stack || msg.toString()
+  typeof msg === 'string' ? msg : msg?.stack || msg?.toString()
 
 const log = logger => message => logger(stringify(message))
 
@@ -26389,9 +26389,10 @@ logInfo('before getPRBody!')
     )
 
     // logInfo(JSON.stringify(response))
-    logInfo(JSON.stringify(response.statusCode))
-    logInfo(JSON.stringify(response.error))
-    logInfo(JSON.stringify(response.message))
+    logInfo(JSON.stringify(response?.statusCode || 'status'))
+    logInfo(JSON.stringify(response?.status || 'status'))
+    logInfo(JSON.stringify(response?.error || 'error'))
+    logInfo(JSON.stringify(response?.message || 'message'))
   } catch (err) {
     let message = `Unable to create the pull request ${err.message}`
     logInfo(message)
