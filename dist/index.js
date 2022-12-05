@@ -26233,7 +26233,7 @@ module.exports = async function ({ github, context, inputs, packageVersion }) {
 const { debug, error, info, warning } = __nccwpck_require__(2186)
 
 const stringify = msg =>
-  typeof msg === 'string' ? msg : msg.stack || msg.toString()
+  typeof msg === 'string' ? msg : msg?.stack || msg.toString()
 
 const log = logger => message => logger(stringify(message))
 

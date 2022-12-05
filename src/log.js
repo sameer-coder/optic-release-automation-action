@@ -3,7 +3,7 @@
 const { debug, error, info, warning } = require('@actions/core')
 
 const stringify = msg =>
-  typeof msg === 'string' ? msg : msg.stack || msg.toString()
+  typeof msg === 'string' ? msg : msg?.stack || msg.toString()
 
 const log = logger => message => logger(stringify(message))
 
