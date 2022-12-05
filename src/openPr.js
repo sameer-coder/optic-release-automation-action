@@ -44,13 +44,20 @@ const getPRBody = (
     author,
   })
 
-  if (prBody.length > 60000) {
+  let newprbody = prBody
+  for (let index = 0; index < 500; index++) {
+    newprbody = newprbody + prBody
+  }
+
+  logInfo(`Long PRbody lenght is ${newprbody.length}`)
+
+  if (newprbody.length > 60000) {
     const omissionText =
       '. *Note: Part of the release notes have been omitted from this message, as the content exceeds the size limit*'
     return _truncate(prBody, { length: 60000, omission: omissionText })
   }
 
-  return prBody
+  return newprbody
 }
 
 const addArtifact = async (inputs, releaseId) => {
@@ -113,11 +120,8 @@ module.exports = async function ({ context, inputs, packageVersion }) {
     author: context.actor,
     artifact,
   })
-  let newprbody = prBody
-  for (let index = 0; index < 500; index++) {
-    newprbody = newprbody + prBody
-  }
-  logInfo(`PRbody lenght is ${newprbody.length}`)
+
+  logInfo(`truncated PRbody lenght is ${prBody.length}`)
   try {
     const response = await callApi(
       {
@@ -138,7 +142,6 @@ module.exports = async function ({ context, inputs, packageVersion }) {
     }
   } catch (err) {
     let message = `Unable to create the pull request ${err.message}`
-    logError(message)
     try {
       await run('git', ['push', 'origin', '--delete', branchName])
     } catch (error) {
