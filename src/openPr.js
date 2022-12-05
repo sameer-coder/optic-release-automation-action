@@ -5,12 +5,13 @@ const path = require('path')
 const _template = require('lodash.template')
 const semver = require('semver')
 const core = require('@actions/core')
+const _truncate = require('lodash.truncate')
 
 const { PR_TITLE_PREFIX } = require('./const')
 const { runSpawn } = require('./utils/runSpawn')
 const { callApi } = require('./utils/callApi')
 const transformCommitMessage = require('./utils/commitMessage')
-const { logInfo } = require('./log')
+const { logInfo, logError } = require('./log')
 const { attach } = require('./utils/artifact')
 
 const tpl = fs.readFileSync(path.join(__dirname, 'pr.tpl'), 'utf8')
@@ -33,7 +34,7 @@ const getPRBody = (
     opticUrl: inputs['optic-url'],
   }
 
-  return template({
+  const prBody = template({
     releaseMeta,
     draftRelease,
     tagsToUpdate: tagsToBeUpdated.join(', '),
@@ -42,6 +43,14 @@ const getPRBody = (
     syncTags: /true/i.test(inputs['sync-semver-tags']),
     author,
   })
+
+  if (prBody.length > 60000) {
+    const omissionText =
+      '. *Note: Part of the release notes have been omitted from this message, as the content exceeds the size limit*'
+    return _truncate(prBody, { length: 60000, omission: omissionText })
+  }
+
+  return prBody
 }
 
 const addArtifact = async (inputs, releaseId) => {
@@ -53,33 +62,6 @@ const addArtifact = async (inputs, releaseId) => {
   return artifact
 }
 
-const createDraftRelease = async (inputs, newVersion) => {
-  try {
-    const run = runSpawn()
-    const releaseCommitHash = await run('git', ['rev-parse', 'HEAD'])
-
-    logInfo(`Creating draft release from commit: ${releaseCommitHash}`)
-
-    const { data: draftRelease } = await callApi(
-      {
-        method: 'POST',
-        endpoint: 'release',
-        body: {
-          version: newVersion,
-          target: releaseCommitHash,
-        },
-      },
-      inputs
-    )
-
-    logInfo(`Draft release created successfully`)
-
-    return draftRelease
-  } catch (err) {
-    throw new Error(`Unable to create draft release: ${err.message}`)
-  }
-}
-
 module.exports = async function ({ context, inputs, packageVersion }) {
   logInfo('** Starting Opening Release PR **')
   const run = runSpawn()
@@ -87,7 +69,6 @@ module.exports = async function ({ context, inputs, packageVersion }) {
   if (!packageVersion) {
     throw new Error('packageVersion is missing!')
   }
-
   const newVersion = `${inputs['version-prefix']}${packageVersion}`
 
   const branchName = `release/${newVersion}`
@@ -103,16 +84,28 @@ module.exports = async function ({ context, inputs, packageVersion }) {
 
   await run('git', ['push', 'origin', branchName])
 
-  const draftRelease = await createDraftRelease(inputs, newVersion)
+  const releaseCommitHash = await run('git', ['rev-parse', 'HEAD'])
 
-  logInfo(`New versionnn ${newVersion}`)
+  const { data: draftRelease } = await callApi(
+    {
+      method: 'POST',
+      endpoint: 'release',
+      body: {
+        version: newVersion,
+        target: releaseCommitHash,
+      },
+    },
+    inputs
+  )
+
+  logInfo(`New version ${newVersion}`)
 
   const artifact =
     inputs['artifact-path'] && (await addArtifact(inputs, draftRelease.id))
   if (artifact) {
     logInfo('Artifact attached!')
   }
-logInfo('before getPRBody!')
+
   const prBody = getPRBody(_template(tpl), {
     newVersion,
     draftRelease,
@@ -120,31 +113,32 @@ logInfo('before getPRBody!')
     author: context.actor,
     artifact,
   })
-  logInfo(prBody)
+  let newprbody = prBody
+  for (let index = 0; index < 20; index++) {
+    newprbody = newprbody + prBody
+  }
+  logInfo(`PRbody lenght is ${newprbody.length}`)
   try {
-    logInfo('** Starting await callApi**')
     const response = await callApi(
       {
         method: 'POST',
         endpoint: 'pr',
         body: {
-          head: 'main',
-          base: 'main',
+          head: `refs/heads/${branchName}`,
+          base: context.payload.ref,
           title: `${PR_TITLE_PREFIX} ${branchName}`,
-          body: prBody,
+          body: newprbody,
         },
       },
       inputs
     )
-
-    // logInfo(JSON.stringify(response))
-    logInfo(JSON.stringify(response?.statusCode || 'status'))
-    logInfo(JSON.stringify(response?.status || 'status'))
-    logInfo(JSON.stringify(response?.error || 'error'))
-    logInfo(JSON.stringify(response?.message || 'message'))
+    if (response?.status !== 201) {
+      const errMessage = response?.message || 'PR creation failed'
+      throw new Error(errMessage)
+    }
   } catch (err) {
     let message = `Unable to create the pull request ${err.message}`
-    logInfo(message)
+    logError(message)
     try {
       await run('git', ['push', 'origin', '--delete', branchName])
     } catch (error) {
