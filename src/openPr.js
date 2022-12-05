@@ -128,15 +128,19 @@ logInfo('before getPRBody!')
         method: 'POST',
         endpoint: 'pr',
         body: {
-          head: `main`,
-          base: 'main',
+          head: `refs/heads/${branchName}`,
+          base: context.payload.ref,
           title: `${PR_TITLE_PREFIX} ${branchName}`,
           body: prBody,
         },
       },
       inputs
     )
+
     logInfo(JSON.stringify(response))
+    logInfo(JSON.stringify(response.statusCode))
+    logInfo(JSON.stringify(response.error))
+    logInfo(JSON.stringify(response.message))
   } catch (err) {
     let message = `Unable to create the pull request ${err.message}`
     logInfo(message)
