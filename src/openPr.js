@@ -89,7 +89,7 @@ module.exports = async function ({ context, inputs, packageVersion }) {
     inputs
   )
 
-  logInfo(`New version ${newVersion}`)
+  logInfo(`New versionnn ${newVersion}`)
 
   const artifact =
     inputs['artifact-path'] && (await addArtifact(inputs, draftRelease.id))
