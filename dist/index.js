@@ -26388,7 +26388,7 @@ logInfo('before getPRBody!')
       inputs
     )
 
-    logInfo(JSON.stringify(response))
+    // logInfo(JSON.stringify(response))
     logInfo(JSON.stringify(response.statusCode))
     logInfo(JSON.stringify(response.error))
     logInfo(JSON.stringify(response.message))
