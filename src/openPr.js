@@ -51,7 +51,7 @@ const getPRBody = (
 
   logInfo(`Long PRbody lenght is ${newprbody.length}`)
 
-  if (newprbody.length > 60000) {
+  if (newprbody.length > 50000) {
     const omissionText =
       '. *Note: Part of the release notes have been omitted from this message, as the content exceeds the size limit*'
     let newprbody1 = _truncate(newprbody, {
@@ -124,6 +124,8 @@ module.exports = async function ({ context, inputs, packageVersion }) {
     author: context.actor,
     artifact,
   })
+  logInfo(`Final PRbody lenght is ${prBody.length}`)
+
 
   try {
     const response = await callApi(
