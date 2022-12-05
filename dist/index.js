@@ -26941,11 +26941,12 @@ const getPRBody = (
   }
 
   logInfo(`Long PRbody lenght is ${newprbody.length}`)
+  logInfo(`Long PRbody is ${newprbody}`)
 
   if (newprbody.length > 60000) {
     const omissionText =
       '. *Note: Part of the release notes have been omitted from this message, as the content exceeds the size limit*'
-    return _truncate(prBody, { length: 60000, omission: omissionText })
+    newprbody = _truncate(prBody, { length: 60000, omission: omissionText })
   }
 
   return newprbody
@@ -27013,6 +27014,7 @@ module.exports = async function ({ context, inputs, packageVersion }) {
   })
 
   logInfo(`truncated PRbody lenght is ${prBody.length}`)
+  logInfo(`truncated PRbody  is ${prBody}`)
   try {
     const response = await callApi(
       {
@@ -27022,7 +27024,7 @@ module.exports = async function ({ context, inputs, packageVersion }) {
           head: `refs/heads/${branchName}`,
           base: context.payload.ref,
           title: `${PR_TITLE_PREFIX} ${branchName}`,
-          body: newprbody,
+          body: prBody,
         },
       },
       inputs
