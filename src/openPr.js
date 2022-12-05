@@ -45,7 +45,7 @@ const getPRBody = (
   })
 
   let newprbody = prBody
-  for (let index = 0; index < 500; index++) {
+  for (let index = 0; index < 300; index++) {
     newprbody = newprbody + prBody
   }
 
@@ -55,7 +55,12 @@ const getPRBody = (
   if (newprbody.length > 60000) {
     const omissionText =
       '. *Note: Part of the release notes have been omitted from this message, as the content exceeds the size limit*'
-    newprbody = _truncate(prBody, { length: 60000, omission: omissionText })
+    let newprbody1 = _truncate(newprbody, {
+      length: 60000,
+      omission: omissionText,
+    })
+    logInfo(`truncated PRbody lenght is ${newprbody1.length}`)
+    logInfo(`truncated PRbody  is ${newprbody1}`)
   }
 
   return newprbody
@@ -122,8 +127,6 @@ module.exports = async function ({ context, inputs, packageVersion }) {
     artifact,
   })
 
-  logInfo(`truncated PRbody lenght is ${prBody.length}`)
-  logInfo(`truncated PRbody  is ${prBody}`)
   try {
     const response = await callApi(
       {
