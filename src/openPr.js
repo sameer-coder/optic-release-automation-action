@@ -96,7 +96,7 @@ module.exports = async function ({ context, inputs, packageVersion }) {
   if (artifact) {
     logInfo('Artifact attached!')
   }
-
+logInfo('before getPRBody!')
   const prBody = getPRBody(_template(tpl), {
     newVersion,
     draftRelease,
@@ -104,7 +104,9 @@ module.exports = async function ({ context, inputs, packageVersion }) {
     author: context.actor,
     artifact,
   })
+  logInfo(prBody)
   try {
+    logInfo('** Starting await callApi**')
     const response = await callApi(
       {
         method: 'POST',
