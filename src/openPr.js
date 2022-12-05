@@ -110,8 +110,8 @@ module.exports = async function ({ context, inputs, packageVersion }) {
         method: 'POST',
         endpoint: 'pr',
         body: {
-          head: `refs/heads/${branchName}`,
-          base: context.payload.ref,
+          head: `main`,
+          base: 'main',
           title: `${PR_TITLE_PREFIX} ${branchName}`,
           body: prBody,
         },
