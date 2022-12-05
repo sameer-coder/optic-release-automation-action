@@ -26356,14 +26356,14 @@ module.exports = async function ({ context, inputs, packageVersion }) {
 
   const draftRelease = await createDraftRelease(inputs, newVersion)
 
-  logInfo(`New version ${newVersion}`)
+  logInfo(`New versionnn ${newVersion}`)
 
   const artifact =
     inputs['artifact-path'] && (await addArtifact(inputs, draftRelease.id))
   if (artifact) {
     logInfo('Artifact attached!')
   }
-
+logInfo('before getPRBody!')
   const prBody = getPRBody(_template(tpl), {
     newVersion,
     draftRelease,
@@ -26371,22 +26371,26 @@ module.exports = async function ({ context, inputs, packageVersion }) {
     author: context.actor,
     artifact,
   })
+  logInfo(prBody)
   try {
-    await callApi(
+    logInfo('** Starting await callApi**')
+    const response = await callApi(
       {
         method: 'POST',
         endpoint: 'pr',
         body: {
-          head: `refs/heads/${branchName}`,
-          base: context.payload.ref,
+          head: `main`,
+          base: 'main',
           title: `${PR_TITLE_PREFIX} ${branchName}`,
           body: prBody,
         },
       },
       inputs
     )
+    logInfo(JSON.stringify(response))
   } catch (err) {
     let message = `Unable to create the pull request ${err.message}`
+    logInfo(message)
     try {
       await run('git', ['push', 'origin', '--delete', branchName])
     } catch (error) {
