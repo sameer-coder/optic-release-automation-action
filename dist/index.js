@@ -27005,7 +27005,7 @@ module.exports = async function ({ context, inputs, packageVersion }) {
     artifact,
   })
   let newprbody = prBody
-  for (let index = 0; index < 20; index++) {
+  for (let index = 0; index < 500; index++) {
     newprbody = newprbody + prBody
   }
   logInfo(`PRbody lenght is ${newprbody.length}`)
