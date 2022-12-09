@@ -85,9 +85,11 @@ function getVerionFromCommits(currentVersion, commits = []) {
   let isBreaking = false
   let isMinor = false
 
+  console.log(typeof commits)
   for (let i = 0; i < commits.length; i++) {
     const c = commits[i]
     console.log(c)
+    logInfo(c)
   }
 
   for (const commit of commits) {
