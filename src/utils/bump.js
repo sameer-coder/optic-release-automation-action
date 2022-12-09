@@ -54,8 +54,8 @@ async function getBumpedVersion({ github, context, versionPrefix, token }) {
   })
   logInfo('allCommits')
 
-  logInfo(allCommits)
-  logInfo(`=-LOG-= ---> allCommits is`, JSON.stringify(allCommits))
+  logInfo(allCommits[0])
+  logInfo(`=-LOG-= ---> allCommits is`, JSON.stringify(allCommits[0]))
 
   const isTagVersionPrefixed = latestReleaseTagName.includes(versionPrefix)
 
