@@ -85,14 +85,12 @@ function getVerionFromCommits(currentVersion, commits = []) {
   let isBreaking = false
   let isMinor = false
 
-  console.log(typeof commits)
-  for (let i = 0; i < commits.length; i++) {
-    const c = commits[i]
-    console.log(c)
-    logInfo(c)
+  for (let i = 0; i < Object.entries(commits).length; i++) {
+    const element = Object.entries(commits)[i]
+    logInfo(element)
   }
 
-  for (const commit of commits) {
+  for (const commit of Object.entries(commits)) {
     const match = commitRegex.exec(commit)
     if (!match) continue
 
