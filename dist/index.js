@@ -27388,8 +27388,6 @@ async function getBumpedVersion({ github, context, versionPrefix, token }) {
   })
   logInfo('allCommits')
 
-  console.log(allCommits[0])
-
   const isTagVersionPrefixed = latestReleaseTagName.includes(versionPrefix)
 
   const currentVersion = isTagVersionPrefixed
@@ -27420,6 +27418,11 @@ function getVerionFromCommits(currentVersion, commits = []) {
   let [major, minor, patch] = currentVersion.split('.')
   let isBreaking = false
   let isMinor = false
+
+  for (let i = 0; i < commits.length; i++) {
+    const c = commits[i]
+    console.log(c)
+  }
 
   for (const commit of commits) {
     const match = commitRegex.exec(commit)
