@@ -27388,7 +27388,7 @@ async function getBumpedVersion({ github, context, versionPrefix, token }) {
   })
 
   //todo-add try catch
-  const allCommits = response.data.map(c => c.message)
+  const allCommits = response.data.map(c => c.commit.message)
 
   logInfo('allCommits')
   console.log(JSON.stringify(allCommits))
