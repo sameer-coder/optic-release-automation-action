@@ -45,14 +45,18 @@ async function getBumpedVersion({ github, context, versionPrefix, token }) {
     })}`
   )
 
-  const allCommits = await octokit.rest.repos.listCommits({
+  const response = await octokit.rest.repos.listCommits({
     owner,
     repo,
     sha: latestReleaseCommitSha,
     per_page: 100,
     page: 1,
   })
+
+  //todo-add try catch
+  const allCommits = response.data
   logInfo('allCommits')
+  console.log(JSON.stringify(allCommits[0]))
 
   const isTagVersionPrefixed = latestReleaseTagName.includes(versionPrefix)
 
@@ -84,8 +88,6 @@ function getVerionFromCommits(currentVersion, commits = []) {
   let [major, minor, patch] = currentVersion.split('.')
   let isBreaking = false
   let isMinor = false
-
-  logInfo(JSON.stringify(commits.data))
 
   for (const commit of commits.data) {
     const match = commitRegex.exec(commit)
