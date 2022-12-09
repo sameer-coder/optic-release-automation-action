@@ -27421,7 +27421,7 @@ function getVerionFromCommits(currentVersion, commits = []) {
 
   logInfo(JSON.stringify(commits.data))
 
-  for (const commit of Object.entries(commits)) {
+  for (const commit of commits.data) {
     const match = commitRegex.exec(commit)
     if (!match) continue
 
