@@ -26958,7 +26958,7 @@ module.exports = async function ({ github, context, inputs, packageVersion }) {
   }
 
   const versionPrefix = inputs['version-prefix']
-  logInfo('versionPrefix', versionPrefix)
+  logInfo(`versionPrefix, ${versionPrefix}`)
 
   let bumpedPackageVersion = null
   if (isAutoBump) {
@@ -27365,12 +27365,12 @@ async function getBumpedVersion({ github, context, versionPrefix }) {
   logInfo('allCommits')
   console.log(JSON.stringify(allCommits))
 
-  logInfo('latestReleaseTagName', latestReleaseTagName)
-  logInfo('versionPrefix', versionPrefix)
-  logInfo('boolean', latestReleaseTagName.includes(versionPrefix))
+  logInfo(`latestReleaseTagName, ${latestReleaseTagName}`)
+  logInfo(`versionPrefix, ${versionPrefix}`)
+  logInfo(`boolean, ${latestReleaseTagName.includes(versionPrefix)}`)
 
   const isTagVersionPrefixed = latestReleaseTagName.includes(versionPrefix)
-  logInfo('isTagVersionPrefixed', isTagVersionPrefixed)
+  logInfo(`isTagVersionPrefixed, ${isTagVersionPrefixed}`)
 
   const currentVersion = isTagVersionPrefixed
     ? latestReleaseTagName.replace(versionPrefix, '')

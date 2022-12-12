@@ -32,12 +32,12 @@ async function getBumpedVersion({ github, context, versionPrefix }) {
   logInfo('allCommits')
   console.log(JSON.stringify(allCommits))
 
-  logInfo('latestReleaseTagName', latestReleaseTagName)
-  logInfo('versionPrefix', versionPrefix)
-  logInfo('boolean', latestReleaseTagName.includes(versionPrefix))
+  logInfo(`latestReleaseTagName, ${latestReleaseTagName}`)
+  logInfo(`versionPrefix, ${versionPrefix}`)
+  logInfo(`boolean, ${latestReleaseTagName.includes(versionPrefix)}`)
 
   const isTagVersionPrefixed = latestReleaseTagName.includes(versionPrefix)
-  logInfo('isTagVersionPrefixed', isTagVersionPrefixed)
+  logInfo(`isTagVersionPrefixed, ${isTagVersionPrefixed}`)
 
   const currentVersion = isTagVersionPrefixed
     ? latestReleaseTagName.replace(versionPrefix, '')
