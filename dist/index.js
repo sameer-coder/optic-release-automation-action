@@ -27461,12 +27461,14 @@ async function getCommitsSinceLatestRelease({ github, owner, repo }) {
   const data = await github.graphql(
     `
       query getCommitsSinceLastRelease($owner: String!, $repo: String!) {
-        defaultBranchRef {
-          target {
-            ... on Commit {
-              history(first: 100, since: "2022-12-09T13:40:27Z") {
-                nodes {
-                  message
+        repository(owner: $owner, name: $repo) {
+          defaultBranchRef {
+            target {
+              ... on Commit {
+                history(first: 100, since: "2022-12-09T13:40:27Z") {
+                  nodes {
+                    message
+                  }
                 }
               }
             }
