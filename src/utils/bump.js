@@ -126,7 +126,6 @@ async function getLatestRelease({ github, owner, repo }) {
 async function getCommitsSinceLatestRelease({ github, owner, repo }) {
   const data = await github.graphql(
     `
-    query {
       query getCommitsSinceLastRelease($owner: String!, $repo: String!) {
         defaultBranchRef {
           target {
