@@ -33,6 +33,8 @@ async function getBumpedVersion({ github, context, versionPrefix }) {
   console.log(JSON.stringify(allCommits))
 
   const isTagVersionPrefixed = latestReleaseTagName.includes(versionPrefix)
+  logInfo('isTagVersionPrefixed', isTagVersionPrefixed)
+  logInfo('versionPrefix', versionPrefix)
 
   const currentVersion = isTagVersionPrefixed
     ? latestReleaseTagName.replace(versionPrefix, '')
@@ -130,6 +132,9 @@ async function getCommitsSinceLatestRelease({
   repo,
   commitDate,
 }) {
+  const parsedCommitDate = new Date(commitDate)
+  parsedCommitDate.setSeconds(parsedCommitDate.getSeconds() + 1)
+
   const data = await github.graphql(
     `
       query getCommitsSinceLastRelease($owner: String!, $repo: String!, $since: GitTimestamp!) {
@@ -151,13 +156,15 @@ async function getCommitsSinceLatestRelease({
     {
       owner,
       repo,
-      since: commitDate,
+      since: parsedCommitDate,
     }
   )
 
   logInfo(`response from get commits query ${JSON.stringify(data)}`)
 
-  return data?.repository?.defaultBranchRef?.target?.history?.nodes
+  const commitsList =
+    data?.repository?.defaultBranchRef?.target?.history?.nodes || []
+  return commitsList.map(c => c.message)
 }
 
 exports.getBumpedVersion = getBumpedVersion
