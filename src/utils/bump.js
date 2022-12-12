@@ -18,14 +18,14 @@ async function getBumpedVersion({ github, context, versionPrefix }) {
     throw new Error(`Couldn't find latest release`)
   }
 
-  const { allCommits = [] } = await getCommitsSinceLatestRelease({
+  const allCommits = await getCommitsSinceLatestRelease({
     github,
     owner,
     repo,
     commitDate: latestReleaseCommitDate,
   })
 
-  if (!allCommits) {
+  if (!allCommits.length) {
     throw new Error(`Couldn't get list of commits since last release`)
   }
 
