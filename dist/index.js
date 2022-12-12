@@ -27457,15 +27457,20 @@ async function getLatestRelease({ github, owner, repo }) {
   }
 }
 
-async function getCommitsSinceLatestRelease({ github, owner, repo }) {
+async function getCommitsSinceLatestRelease({
+  github,
+  owner,
+  repo,
+  commitDate,
+}) {
   const data = await github.graphql(
     `
-      query getCommitsSinceLastRelease($owner: String!, $repo: String!) {
+      query getCommitsSinceLastRelease($owner: String!, $repo: String!, $since: String!) {
         repository(owner: $owner, name: $repo) {
           defaultBranchRef {
             target {
               ... on Commit {
-                history(first: 100, since: "2022-12-09T13:40:27Z") {
+                history(first: 100, since: $since) {
                   nodes {
                     message
                   }
@@ -27479,6 +27484,7 @@ async function getCommitsSinceLatestRelease({ github, owner, repo }) {
     {
       owner,
       repo,
+      since: commitDate,
     }
   )
 
