@@ -11,6 +11,7 @@ async function getBumpedVersion({ github, context }) {
     latestReleaseCommitDate,
   } = await getLatestRelease({ github, owner, repo })
 
+  console.log(` LOG: ${latestReleaseTagName} ${latestReleaseTagName}`)
   if (
     !latestReleaseCommitSha ||
     !latestReleaseTagName ||
