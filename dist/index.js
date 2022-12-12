@@ -26949,10 +26949,6 @@ module.exports = async function ({ github, context, inputs, packageVersion }) {
 
   const isAutoBump = inputs['semver'] === 'auto'
 
-  logInfo(`packageVersion is ${packageVersion}`)
-  logInfo(`inputs is ${JSON.stringify(inputs)}`)
-  logInfo(`isAutoBump is ${isAutoBump}`)
-
   if (!packageVersion && !isAutoBump) {
     throw new Error('packageVersion is missing!')
   }
@@ -26965,11 +26961,11 @@ module.exports = async function ({ github, context, inputs, packageVersion }) {
       github,
       context,
     })
-    logInfo(`bumpedPackageVersion is ${bumpedPackageVersion}`)
 
     if (!bumpedPackageVersion) {
       throw new Error('Error in automatically bumping version number')
     }
+
     await run('npm', [
       'version',
       '--no-git-tag-version',
@@ -26978,9 +26974,9 @@ module.exports = async function ({ github, context, inputs, packageVersion }) {
   }
 
   const newPackageVersion = isAutoBump ? bumpedPackageVersion : packageVersion
-  logInfo(`newPackageVersion is ${newPackageVersion}`)
 
   const newVersion = `${versionPrefix}${newPackageVersion}`
+  logInfo(`New version is ${newVersion}`)
 
   const branchName = `release/${newVersion}`
 
@@ -27348,7 +27344,6 @@ async function getBumpedVersion({ github, context }) {
     latestReleaseCommitDate,
   } = await getLatestRelease({ github, owner, repo })
 
-  console.log(` LOG: ${latestReleaseTagName} ${latestReleaseTagName}`)
   if (
     !latestReleaseCommitSha ||
     !latestReleaseTagName ||
@@ -27365,10 +27360,15 @@ async function getBumpedVersion({ github, context }) {
   })
 
   if (!allCommits.length) {
-    throw new Error(`Couldn't get list of commits since last release`)
+    throw new Error(`No commits found since last release`)
   }
 
-  return getVerionFromCommits(latestReleaseTagName, allCommits)
+  const bumpedVersion = getVerionFromCommits(latestReleaseTagName, allCommits)
+
+  if (!semver.valid(bumpedVersion)) {
+    throw new Error(`Invalid bumped version ${bumpedVersion}`)
+  }
+  return bumpedVersion
 }
 
 function getVerionFromCommits(currentVersion, commits = []) {

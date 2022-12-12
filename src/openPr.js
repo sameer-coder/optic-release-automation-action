@@ -58,10 +58,6 @@ module.exports = async function ({ github, context, inputs, packageVersion }) {
 
   const isAutoBump = inputs['semver'] === 'auto'
 
-  logInfo(`packageVersion is ${packageVersion}`)
-  logInfo(`inputs is ${JSON.stringify(inputs)}`)
-  logInfo(`isAutoBump is ${isAutoBump}`)
-
   if (!packageVersion && !isAutoBump) {
     throw new Error('packageVersion is missing!')
   }
@@ -74,11 +70,11 @@ module.exports = async function ({ github, context, inputs, packageVersion }) {
       github,
       context,
     })
-    logInfo(`bumpedPackageVersion is ${bumpedPackageVersion}`)
 
     if (!bumpedPackageVersion) {
       throw new Error('Error in automatically bumping version number')
     }
+
     await run('npm', [
       'version',
       '--no-git-tag-version',
@@ -87,9 +83,9 @@ module.exports = async function ({ github, context, inputs, packageVersion }) {
   }
 
   const newPackageVersion = isAutoBump ? bumpedPackageVersion : packageVersion
-  logInfo(`newPackageVersion is ${newPackageVersion}`)
 
   const newVersion = `${versionPrefix}${newPackageVersion}`
+  logInfo(`New version is ${newVersion}`)
 
   const branchName = `release/${newVersion}`
 

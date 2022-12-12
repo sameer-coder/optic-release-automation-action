@@ -11,7 +11,6 @@ async function getBumpedVersion({ github, context }) {
     latestReleaseCommitDate,
   } = await getLatestRelease({ github, owner, repo })
 
-  console.log(` LOG: ${latestReleaseTagName} ${latestReleaseTagName}`)
   if (
     !latestReleaseCommitSha ||
     !latestReleaseTagName ||
@@ -28,10 +27,15 @@ async function getBumpedVersion({ github, context }) {
   })
 
   if (!allCommits.length) {
-    throw new Error(`Couldn't get list of commits since last release`)
+    throw new Error(`No commits found since last release`)
   }
 
-  return getVerionFromCommits(latestReleaseTagName, allCommits)
+  const bumpedVersion = getVerionFromCommits(latestReleaseTagName, allCommits)
+
+  if (!semver.valid(bumpedVersion)) {
+    throw new Error(`Invalid bumped version ${bumpedVersion}`)
+  }
+  return bumpedVersion
 }
 
 function getVerionFromCommits(currentVersion, commits = []) {
