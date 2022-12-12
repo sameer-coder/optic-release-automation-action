@@ -22,6 +22,7 @@ async function getBumpedVersion({ github, context, versionPrefix }) {
     github,
     owner,
     repo,
+    commitDate: latestReleaseCommitDate,
   })
 
   if (!allCommits) {
