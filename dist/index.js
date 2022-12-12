@@ -27473,7 +27473,6 @@ async function getCommitsSinceLatestRelease({ github, owner, repo }) {
           }
         }
       }
-    }
     `,
     {
       owner,
