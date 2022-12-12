@@ -26957,14 +26957,13 @@ module.exports = async function ({ github, context, inputs, packageVersion }) {
     throw new Error('packageVersion is missing!')
   }
 
-  const token = inputs['github-token']
   const versionPrefix = inputs['version-prefix']
+  logInfo('versionPrefix', versionPrefix)
 
   let bumpedPackageVersion = null
   if (isAutoBump) {
     bumpedPackageVersion = await getBumpedVersion({
       versionPrefix,
-      token,
       github,
       context,
     })
@@ -27366,9 +27365,12 @@ async function getBumpedVersion({ github, context, versionPrefix }) {
   logInfo('allCommits')
   console.log(JSON.stringify(allCommits))
 
+  logInfo('latestReleaseTagName', latestReleaseTagName)
+  logInfo('versionPrefix', versionPrefix)
+  logInfo('boolean', latestReleaseTagName.includes(versionPrefix))
+
   const isTagVersionPrefixed = latestReleaseTagName.includes(versionPrefix)
   logInfo('isTagVersionPrefixed', isTagVersionPrefixed)
-  logInfo('versionPrefix', versionPrefix)
 
   const currentVersion = isTagVersionPrefixed
     ? latestReleaseTagName.replace(versionPrefix, '')
