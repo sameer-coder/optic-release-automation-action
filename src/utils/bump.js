@@ -54,7 +54,7 @@ async function getBumpedVersion({ github, context, versionPrefix }) {
 
 function getVerionFromCommits(currentVersion, commits = []) {
   // Define a regular expression to match Conventional Commits messages
-  const commitRegex = /^(feat|fix|BREAKING CHANGE)(\(.+\))?:\s(.+)$/
+  const commitRegex = /^(feat|fix|BREAKING CHANGE)(\(.+\))?:(.+)$/
 
   // Define a mapping of commit types to version bump types
   var versionBumpMap = {
@@ -86,11 +86,11 @@ function getVerionFromCommits(currentVersion, commits = []) {
   }
 
   if (isBreaking) {
-    return `${major++}.0.0`
+    return `${++major}.0.0`
   } else if (isMinor) {
-    return `${major}.${minor++}.0`
+    return `${major}.${++minor}.0`
   } else {
-    return `${major}.${minor}.${patch++}`
+    return `${major}.${minor}.${++patch}`
   }
 }
 
@@ -114,8 +114,6 @@ async function getLatestRelease({ github, owner, repo }) {
       repo,
     }
   )
-
-  logInfo(`response from get latest release query ${JSON.stringify(data)}`)
 
   const latestReleaseCommitSha = data?.repository?.latestRelease?.tagCommit?.oid
   const latestReleaseTagName = data?.repository?.latestRelease?.tagName
@@ -162,8 +160,6 @@ async function getCommitsSinceLatestRelease({
       since: parsedCommitDate,
     }
   )
-
-  logInfo(`response from get commits query ${JSON.stringify(data)}`)
 
   const commitsList =
     data?.repository?.defaultBranchRef?.target?.history?.nodes || []
