@@ -1,60 +1,32 @@
 'use strict'
-const { logDebug, logInfo } = require('../log')
-const { getOctokit } = require('@actions/github')
+const { logInfo } = require('../log')
 
-async function getBumpedVersion({ github, context, versionPrefix, token }) {
+async function getBumpedVersion({ github, context, versionPrefix }) {
   const { owner, repo } = context.repo
-  const data = await github.graphql(
-    `
-    query getLatestTagCommit($owner: String!, $repo: String!) {
-      repository(owner: $owner, name: $repo) {
-        latestRelease{
-          tagName
-          tagCommit {
-            oid
-          }
-        }
-      }
-    }
-    `,
-    {
-      owner,
-      repo,
-    }
-  )
 
-  logInfo(`response from get latest release query ${JSON.stringify(data)}`)
+  const {
+    latestReleaseCommitSha,
+    latestReleaseTagName,
+    latestReleaseCommitDate,
+  } = await getLatestRelease({ github, owner, repo })
 
-  const latestReleaseCommitSha = data?.repository?.latestRelease?.tagCommit?.oid
-  const latestReleaseTagName = data?.repository?.latestRelease?.tagName
-
-  if (!latestReleaseCommitSha || !latestReleaseTagName) {
-    logDebug(`response from get latest release query ${JSON.stringify(data)}`)
+  if (
+    !latestReleaseCommitSha ||
+    !latestReleaseTagName ||
+    !latestReleaseCommitDate
+  ) {
     throw new Error(`Couldn't find latest release`)
   }
 
-  const octokit = getOctokit(token)
-
-  logInfo(
-    `obj ${JSON.stringify({
-      owner,
-      repo,
-      sha: latestReleaseCommitSha,
-      per_page: 100,
-      page: 1,
-    })}`
-  )
-
-  const response = await octokit.rest.repos.listCommits({
+  const { allCommits = [] } = await getCommitsSinceLatestRelease({
+    github,
     owner,
     repo,
-    sha: latestReleaseCommitSha,
-    per_page: 100,
-    page: 1,
   })
 
-  //todo-add try catch
-  const allCommits = response.data.map(c => c.commit.message)
+  if (!allCommits) {
+    throw new Error(`Couldn't get list of commits since last release`)
+  }
 
   logInfo('allCommits')
   console.log(JSON.stringify(allCommits))
@@ -68,7 +40,6 @@ async function getBumpedVersion({ github, context, versionPrefix, token }) {
   logInfo(`=-LOG-= ---> currentVersion`, currentVersion)
 
   if (!currentVersion) {
-    logDebug(`response from get latest release query ${JSON.stringify(data)}`)
     throw new Error(`Couldn't find latest version`)
   }
 
@@ -90,7 +61,7 @@ function getVerionFromCommits(currentVersion, commits = []) {
   let isBreaking = false
   let isMinor = false
 
-  for (const commit of commits.data) {
+  for (const commit of commits) {
     const match = commitRegex.exec(commit)
     if (!match) continue
 
@@ -115,6 +86,71 @@ function getVerionFromCommits(currentVersion, commits = []) {
   } else {
     return `${major}.${minor}.${patch++}`
   }
+}
+
+async function getLatestRelease({ github, owner, repo }) {
+  const data = await github.graphql(
+    `
+    query getLatestTagCommit($owner: String!, $repo: String!) {
+      repository(owner: $owner, name: $repo) {
+        latestRelease{
+          tagName
+          tagCommit {
+            oid
+            committedDate
+          }
+        }
+      }
+    }
+    `,
+    {
+      owner,
+      repo,
+    }
+  )
+
+  logInfo(`response from get latest release query ${JSON.stringify(data)}`)
+
+  const latestReleaseCommitSha = data?.repository?.latestRelease?.tagCommit?.oid
+  const latestReleaseTagName = data?.repository?.latestRelease?.tagName
+  const latestReleaseCommitDate =
+    data?.repository?.latestRelease?.tagCommit?.committedDate
+
+  return {
+    latestReleaseCommitSha,
+    latestReleaseTagName,
+    latestReleaseCommitDate,
+  }
+}
+
+async function getCommitsSinceLatestRelease({ github, owner, repo }) {
+  const data = await github.graphql(
+    `
+    query {
+      query getCommitsSinceLastRelease($owner: String!, $repo: String!) {
+        defaultBranchRef {
+          target {
+            ... on Commit {
+              history(first: 100, since: "2022-12-09T13:40:27Z") {
+                nodes {
+                  message
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    `,
+    {
+      owner,
+      repo,
+    }
+  )
+
+  logInfo(`response from get commits query ${JSON.stringify(data)}`)
+
+  return data?.repository?.defaultBranchRef?.target?.history?.nodes
 }
 
 exports.getBumpedVersion = getBumpedVersion
