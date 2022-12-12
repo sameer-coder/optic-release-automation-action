@@ -43,7 +43,7 @@ async function getBumpedVersion({ github, context, versionPrefix }) {
     ? latestReleaseTagName.replace(versionPrefix, '')
     : latestReleaseTagName.replace(versionPrefix, 'v.') // default prefix
 
-  logInfo(`=-LOG-= ---> currentVersion`, currentVersion)
+  logInfo(`currentVersion, ${currentVersion}`)
 
   if (!currentVersion) {
     throw new Error(`Couldn't find latest version`)

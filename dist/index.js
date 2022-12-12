@@ -26967,14 +26967,19 @@ module.exports = async function ({ github, context, inputs, packageVersion }) {
       github,
       context,
     })
-    logInfo(`=-LOG-= ---> bumpedPackageVersion`, bumpedPackageVersion)
+    logInfo(`bumpedPackageVersion is ${bumpedPackageVersion}`)
 
     if (!bumpedPackageVersion) {
       throw new Error('Error in automatically bumping version number')
     }
+    await run('npm', [
+      'version',
+      '--no-git-tag-version',
+      `${versionPrefix}${bumpedPackageVersion}`,
+    ])
   }
   const newPackageVersion = isAutoBump ? bumpedPackageVersion : packageVersion
-  logInfo(`=-LOG-= ---> newPackageVersion`, newPackageVersion)
+  logInfo(`newPackageVersion is ${newPackageVersion}`)
 
   const newVersion = `${versionPrefix}${newPackageVersion}`
 
@@ -27376,7 +27381,7 @@ async function getBumpedVersion({ github, context, versionPrefix }) {
     ? latestReleaseTagName.replace(versionPrefix, '')
     : latestReleaseTagName.replace(versionPrefix, 'v.') // default prefix
 
-  logInfo(`=-LOG-= ---> currentVersion`, currentVersion)
+  logInfo(`currentVersion, ${currentVersion}`)
 
   if (!currentVersion) {
     throw new Error(`Couldn't find latest version`)
