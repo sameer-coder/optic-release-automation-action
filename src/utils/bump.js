@@ -1,7 +1,8 @@
 'use strict'
-const { logInfo } = require('../log')
 
-async function getBumpedVersion({ github, context, versionPrefix }) {
+const semver = require('semver')
+
+async function getBumpedVersion({ github, context }) {
   const { owner, repo } = context.repo
 
   const {
@@ -29,27 +30,7 @@ async function getBumpedVersion({ github, context, versionPrefix }) {
     throw new Error(`Couldn't get list of commits since last release`)
   }
 
-  logInfo('allCommits')
-  console.log(JSON.stringify(allCommits))
-
-  logInfo(`latestReleaseTagName, ${latestReleaseTagName}`)
-  logInfo(`versionPrefix, ${versionPrefix}`)
-  logInfo(`boolean, ${latestReleaseTagName.includes(versionPrefix)}`)
-
-  const isTagVersionPrefixed = latestReleaseTagName.includes(versionPrefix)
-  logInfo(`isTagVersionPrefixed, ${isTagVersionPrefixed}`)
-
-  const currentVersion = isTagVersionPrefixed
-    ? latestReleaseTagName.replace(versionPrefix, '')
-    : latestReleaseTagName.replace(versionPrefix, 'v.') // default prefix
-
-  logInfo(`currentVersion, ${currentVersion}`)
-
-  if (!currentVersion) {
-    throw new Error(`Couldn't find latest version`)
-  }
-
-  return getVerionFromCommits(currentVersion, allCommits)
+  return getVerionFromCommits(latestReleaseTagName, allCommits)
 }
 
 function getVerionFromCommits(currentVersion, commits = []) {
@@ -63,7 +44,16 @@ function getVerionFromCommits(currentVersion, commits = []) {
     fix: 'patch',
   }
 
-  let [major, minor, patch] = currentVersion.split('.')
+  let { major, minor, patch } = semver.parse(currentVersion)
+
+  if (
+    !Number.isInteger(major) ||
+    !Number.isInteger(minor) ||
+    !Number.isInteger(patch)
+  ) {
+    throw new Error('Invalid major/minor/patch version found')
+  }
+
   let isBreaking = false
   let isMinor = false
 
@@ -73,7 +63,6 @@ function getVerionFromCommits(currentVersion, commits = []) {
 
     const type = match[1]
 
-    // Determine the version bump type based on the commit type
     const bumpType = versionBumpMap[type]
     if (!bumpType) continue
 

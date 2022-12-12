@@ -67,12 +67,10 @@ module.exports = async function ({ github, context, inputs, packageVersion }) {
   }
 
   const versionPrefix = inputs['version-prefix']
-  logInfo(`versionPrefix, ${versionPrefix}`)
 
   let bumpedPackageVersion = null
   if (isAutoBump) {
     bumpedPackageVersion = await getBumpedVersion({
-      versionPrefix,
       github,
       context,
     })
@@ -87,6 +85,7 @@ module.exports = async function ({ github, context, inputs, packageVersion }) {
       `${versionPrefix}${bumpedPackageVersion}`,
     ])
   }
+
   const newPackageVersion = isAutoBump ? bumpedPackageVersion : packageVersion
   logInfo(`newPackageVersion is ${newPackageVersion}`)
 
