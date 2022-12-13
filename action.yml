@@ -89,14 +89,21 @@ runs:
       with:
         github-token: ${{ inputs.github-token }}
         script: |
-          let newVersion = '${{ inputs.semver }}'
           if ('${{ inputs.semver }}' == 'auto') {
             const script = require('${{ github.action_path }}/dist/index.js')
-            newversion = await script.getBumpedVersion({ github, context })
+            const newVersion = await script.getBumpedVersion({ github, context })
+            console.log(`npmm version --no-git-tag-version ${newVersion}`)
+            await exec.exec('npm version --no-git-tag-version ${newVersion}')
+            const newV = require('./package.json').version
+            console.log(`newV ${newV}`)
+            return newV
+          } else {
+            console.log(`npmm version --no-git-tag-version ${{ inputs.semver }}`)
+            await exec.exec('npm version --no-git-tag-version ${{ inputs.semver }}')
+            const newV = require('./package.json').version
+            console.log(`newV ${newV}`)
+            return newV
           }
-          console.log(`npmm version --no-git-tag-version ${newVersion}`)
-          await exec.exec(`npm version --no-git-tag-version ${newVersion}`)
-          return require('./package.json').version
 
     - name: Build the package
       if: ${{ inputs.build-command }}
