@@ -2,14 +2,14 @@
 
 // const openPr = require('./openPr')
 const release = require('./release')
+const { getAutoBumpedVersion } = require('./utils/bump')
+const { runSpawn } = require('./utils/runSpawn')
 const { logError, logInfo } = require('./log')
-const { getBumpedVersion } = require('./utils/bump')
 
-module.exports = async function ({ github, context, inputs, packageVersion }) {
+async function runAction({ github, context, inputs, packageVersion }) {
   if (context.eventName === 'workflow_dispatch') {
     logInfo(`packageVersion = ${packageVersion}`)
     return
-    // return openPr({ github, context, inputs, packageVersion })
   }
 
   if (context.eventName === 'pull_request') {
@@ -19,4 +19,17 @@ module.exports = async function ({ github, context, inputs, packageVersion }) {
   logError('Unsupported event')
 }
 
-module.exports.getBumpedVersion = getBumpedVersion
+async function getBumpedVersionNumber({ github, context, inputs }) {
+  const newVersion =
+    inputs.semver === 'auto'
+      ? await getAutoBumpedVersion({ github, context })
+      : inputs.semver
+
+  const run = runSpawn()
+  await run('npm', ['version', '--no-git-tag-version', newVersion])
+  return await run('npm', ['pkg', 'get', 'version'])
+}
+
+module.exports.runAction = runAction
+module.exports.getBumpedVersionNumber = getBumpedVersionNumber
+module.exports.getAutoBumpedVersion = getAutoBumpedVersion
