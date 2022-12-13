@@ -92,10 +92,11 @@ runs:
           if (${{ inputs.semver }} == 'auto') {
             const script = require('${{ github.action_path }}/dist/index.js')
             const newVersion = await script.getBumpedVersion({ github, context })
-            echo "PACKAGE_VERSION=$(newVersion)" >> $GITHUB_OUTPUT
+            return newVersion
           } else {
             npm version --no-git-tag-version ${{ inputs.semver }}
-            echo "PACKAGE_VERSION=$(echo $(node -p "require('./package.json').version"))" >> $GITHUB_OUTPUT
+            const newVersion = require('./package.json').version
+            return newVersion
           }
       # run: |
       #   if [ ${{ inputs.semver }} == 'auto' ]; then
