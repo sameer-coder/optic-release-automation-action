@@ -94,7 +94,7 @@ runs:
             const script = require('${{ github.action_path }}/dist/index.js')
             newversion = await script.getBumpedVersion({ github, context })
           }
-          await exec.exec('npm version --no-git-tag-version ${{ newVersion }}')
+          await exec.exec(`npm version --no-git-tag-version ${newVersion}`)
           return require('./package.json').version
 
     - name: Build the package
