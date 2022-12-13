@@ -90,7 +90,7 @@ runs:
         github-token: ${{ inputs.github-token }}
         script: |
           const { getBumpedVersionNumber } = require('${{ github.action_path }}/dist/index.js')
-          return await getBumpedVersionNumber({ github, context })
+          return await getBumpedVersionNumber({ github, context, inputs: ${{ toJSON(inputs) }} })
 
     - name: Build the package
       if: ${{ inputs.build-command }}
