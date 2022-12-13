@@ -19156,7 +19156,10 @@ async function getBumpedVersion({ github, context }) {
     throw new Error(`No commits found since last release`)
   }
 
+  console.log(`allCommits=${allCommits}`)
+
   const bumpedVersion = getVerionFromCommits(latestReleaseTagName, allCommits)
+  console.log(`bumpedVersion in file=${bumpedVersion}`)
 
   if (!semver.valid(bumpedVersion)) {
     throw new Error(`Invalid bumped version ${bumpedVersion}`)
