@@ -103,7 +103,6 @@ runs:
       #   else
 
       #   fi
-      shell: 'bash'
 
     - name: Build the package
       if: ${{ inputs.build-command }}
