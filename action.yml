@@ -91,6 +91,7 @@ runs:
         script: |
           if (${{ inputs.semver }} == 'auto') {
             const script = require('${{ github.action_path }}/dist/index.js')
+            console.log(script.getBumpedVersion)
             const newVersion = await script.getBumpedVersion({ github, context })
             return newVersion
           } else {
