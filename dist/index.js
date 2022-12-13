@@ -26852,6 +26852,7 @@ const { logError, logInfo } = __nccwpck_require__(653)
 module.exports = async function ({ github, context, inputs, packageVersion }) {
   if (context.eventName === 'workflow_dispatch') {
     logInfo(`packageVersion = ${packageVersion}`)
+    return
     return openPr({ github, context, inputs, packageVersion })
   }
 
