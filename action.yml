@@ -89,6 +89,7 @@ runs:
       with:
         github-token: ${{ inputs.github-token }}
         script: |
+          console.log('starting')
           if ('${{ inputs.semver }}' == 'auto') {
             console.log('auto')
             const script = require('${{ github.action_path }}/dist/index.js')
