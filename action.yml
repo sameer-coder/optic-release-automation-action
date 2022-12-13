@@ -103,12 +103,6 @@ runs:
             console.log(`New version is ${newVersion}`)
             return newVersion
           }
-      # run: |
-      #   if [ ${{ inputs.semver }} == 'auto' ]; then
-
-      #   else
-
-      #   fi
 
     - name: Build the package
       if: ${{ inputs.build-command }}
@@ -125,7 +119,7 @@ runs:
         github-token: ${{ inputs.github-token }}
         script: |
           const script = require('${{ github.action_path }}/dist/index.js')
-          await script({ github, context, inputs: ${{ toJSON(inputs) }}, packageVersion: "${{ steps.version-bump.outputs.result }}" })
+          await script({ github, context, inputs: ${{ toJSON(inputs) }}, packageVersion: ${{ steps.version-bump.outputs.result }} })
 
     - name: Release the package
       uses: actions/github-script@v6
