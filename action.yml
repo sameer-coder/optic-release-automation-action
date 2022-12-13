@@ -92,8 +92,8 @@ runs:
           if ('${{ inputs.semver }}' == 'auto') {
             const script = require('${{ github.action_path }}/dist/index.js')
             const newVersion = await script.getBumpedVersion({ github, context })
-            console.log(`npmm version --no-git-tag-version ${{newVersion}}`)
-            await exec.exec('npm version --no-git-tag-version ${{newVersion}}')
+            console.log(`npmm version --no-git-tag-version $(newVersion)`)
+            await exec.exec('npm version --no-git-tag-version $(newVersion)')
             const newV = require('./package.json').version
             console.log(`newV ${newV}`)
             return newV
