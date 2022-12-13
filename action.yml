@@ -89,13 +89,13 @@ runs:
       with:
         github-token: ${{ inputs.github-token }}
         script: |
-          if (${{ inputs.semver }} == 'auto') {
+          if ('${{ inputs.semver }}' == 'auto') {
             const script = require('${{ github.action_path }}/dist/index.js')
             console.log(script.getBumpedVersion)
             const newVersion = await script.getBumpedVersion({ github, context })
             return newVersion
           } else {
-            npm version --no-git-tag-version ${{ inputs.semver }}
+            await exec.exec('npm version --no-git-tag-version ${{ inputs.semver }}')
             const newVersion = require('./package.json').version
             return newVersion
           }
