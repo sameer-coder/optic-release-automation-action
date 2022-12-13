@@ -26847,10 +26847,11 @@ exports.APP_NAME = 'optic-release-automation[bot]'
 
 const openPr = __nccwpck_require__(1515)
 const release = __nccwpck_require__(2026)
-const { logError } = __nccwpck_require__(653)
+const { logError, logInfo } = __nccwpck_require__(653)
 
 module.exports = async function ({ github, context, inputs, packageVersion }) {
   if (context.eventName === 'workflow_dispatch') {
+    logInfo(`packageVersion = ${packageVersion}`)
     return openPr({ github, context, inputs, packageVersion })
   }
 
