@@ -41680,13 +41680,15 @@ function getVersionFromCommits(currentVersion, commits = []) {
   ]
 
   for (const commit of commitsb) {
-    let cc = 'BREAKING CHANGE: some other breaking change'
-    const type = conventionalCommitsParser.sync(commit)
+    let type = 'BREAKING CHANGE: some other breaking change'
+    // const type = conventionalCommitsParser.sync(commit)
     const nn = parser(commit)
-    console.log(`=-LOG-= ---> nn, ${JSON.stringify(nn)}`)
-    console.log(`=-LOG-= ---> type ${JSON.stringify(type)} ${cc}`)
-    if (!type) {
-      console.log(`Failed to parse ${type} ${commit}`)
+    console.log(
+      `=-LOG-= ---> nn, ${JSON.stringify(nn.toConventionalChangelogFormat())}`
+    )
+    // console.log(`=-LOG-= ---> type ${JSON.stringify(type)} ${cc}`)
+    if (type) {
+      console.log(`Failed to parse ${nn} ${commit}`)
       continue
     }
 
