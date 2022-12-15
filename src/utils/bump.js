@@ -166,6 +166,9 @@ async function getAutoBumpedVersion() {
   conventionalRecommendedBump(
     {
       config,
+      whatBump: commits => {
+        console.log(`commit is ${commits}`)
+      },
       // preset: {
       //   name: 'conventionalchangelog',
       // },
