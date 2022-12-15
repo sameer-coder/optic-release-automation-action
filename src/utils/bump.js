@@ -1,8 +1,9 @@
 'use strict'
 
 const semver = require('semver')
+const conventionalRecommendedBump = require(`conventional-recommended-bump`)
 
-async function getAutoBumpedVersion({ github, context }) {
+async function getAutoBumpedVersionOld({ github, context }) {
   const { owner, repo } = context.repo
 
   const {
@@ -160,4 +161,23 @@ async function getCommitMessagesSinceLatestRelease({
   return commitsList.map(c => c.message)
 }
 
-exports.getAutoBumpedVersion = getAutoBumpedVersion
+async function getAutoBumpedVersion() {
+  conventionalRecommendedBump(
+    {
+      preset: {
+        name: 'conventionalcommits',
+      },
+    },
+    (error, recommendation) => {
+      if (error) {
+        console.log(`error occured ${error.message}`)
+      }
+      console.log(`release type is ${recommendation.releaseType}`) // 'major'
+      return recommendation.releaseType
+    }
+  )
+}
+
+module.exports = {
+  getAutoBumpedVersion,
+}
