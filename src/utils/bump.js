@@ -55,7 +55,10 @@ function getVersionFromCommits(currentVersion, commits = []) {
 
   for (const commit of commits) {
     const { type = null } = conventionalCommitsParser.sync(commit)
-    if (!type) continue
+    if (!type) {
+      console.log(`Failed to parse ${commit}`)
+      continue
+    }
 
     if (type === 'major' && major === '0') {
       // According to semver, major version zero (0.y.z) is for initial
