@@ -1,10 +1,9 @@
 'use strict'
 
 const semver = require('semver')
-const conventionalRecommendedBump = require(`conventional-recommended-bump`)
-const config = require('conventional-changelog-conventionalcommits')
+const conventionalCommitsParser = require('conventional-commits-parser')
 
-async function getAutoBumpedVersionOld({ github, context }) {
+async function getAutoBumpedVersion({ github, context }) {
   const { owner, repo } = context.repo
 
   const {
@@ -41,16 +40,6 @@ async function getAutoBumpedVersionOld({ github, context }) {
 }
 
 function getVersionFromCommits(currentVersion, commits = []) {
-  // Define a regular expression to match Conventional Commits messages
-  const commitRegex = /^(feat|fix|BREAKING CHANGE)(\(.+\))?:(.+)$/
-
-  // Define a mapping of commit types to version bump types
-  var versionBumpMap = {
-    'BREAKING CHANGE': 'major',
-    feat: 'minor',
-    fix: 'patch',
-  }
-
   let { major, minor, patch } = semver.parse(currentVersion)
 
   if (
@@ -65,18 +54,20 @@ function getVersionFromCommits(currentVersion, commits = []) {
   let isMinor = false
 
   for (const commit of commits) {
-    const match = commitRegex.exec(commit)
-    if (!match) continue
+    const { type = null } = conventionalCommitsParser.sync(commit)
+    if (!type) continue
 
-    const type = match[1]
-
-    const bumpType = versionBumpMap[type]
-    if (!bumpType) continue
-
-    if (bumpType === 'major') {
+    if (type === 'major' && major === '0') {
+      // According to semver, major version zero (0.y.z) is for initial
+      // development. Anything MAY change at any time.
+      // Breaking changes MUST NOT automatically bump the major version
+      // from 0.x to 1.x.
+      isMinor = true
+      break
+    } else if (type === 'major') {
       isBreaking = true
       break
-    } else if (bumpType === 'minor') {
+    } else if (type === 'minor') {
       isMinor = true
     }
   }
@@ -160,29 +151,6 @@ async function getCommitMessagesSinceLatestRelease({
   const commitsList =
     data?.repository?.defaultBranchRef?.target?.history?.nodes || []
   return commitsList.map(c => c.message)
-}
-
-async function getAutoBumpedVersion() {
-  conventionalRecommendedBump(
-    {
-      config,
-      whatBump: commits => {
-        console.log(`commit is ${JSON.stringify(commits)}`)
-      },
-      // preset: {
-      //   name: 'conventionalchangelog',
-      // },
-    },
-    (error, recommendation) => {
-      if (error) {
-        console.log(`error ooccured ${error.message}`)
-      }
-      console.log(
-        `release recommendation = ${JSON.stringify(recommendation.releaseType)}`
-      ) // 'major'
-      return recommendation.releaseType
-    }
-  )
 }
 
 module.exports = {
