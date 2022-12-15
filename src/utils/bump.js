@@ -164,9 +164,7 @@ async function getCommitMessagesSinceLatestRelease({
 async function getAutoBumpedVersion() {
   conventionalRecommendedBump(
     {
-      preset: {
-        name: 'conventionalcommits',
-      },
+      preset: `angular`,
     },
     (error, recommendation) => {
       if (error) {
