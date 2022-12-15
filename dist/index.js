@@ -41675,17 +41675,16 @@ function getVersionFromCommits(currentVersion, commits = []) {
   let isMinor = false
 
   const commitsb = [
-    `feat!: send an email to the customer when a product is shipped`,
+    `feat: send an email to the customer when a product is shipped`,
     'BREAKING CHANGE: some other breaking change',
+    'fix: some other breaking change',
   ]
 
   for (const commit of commitsb) {
     let type = 'BREAKING CHANGE: some other breaking change'
     // const type = conventionalCommitsParser.sync(commit)
     const nn = parser(commit)
-    console.log(
-      `=-LOG-= ---> nn, ${JSON.stringify(nn.toConventionalChangelogFormat())}`
-    )
+    console.log(`=-LOG-= ---> nn, ${JSON.stringify(nn)}`)
     // console.log(`=-LOG-= ---> type ${JSON.stringify(type)} ${cc}`)
     if (type) {
       console.log(`Failed to parse ${nn} ${commit}`)
