@@ -51093,7 +51093,7 @@ async function getAutoBumpedVersion() {
     },
     (error, recommendation) => {
       if (error) {
-        console.log(`error occured ${error.message}`)
+        console.log(`error ooccured ${error.message}`)
       }
       console.log(`release recommendation = ${JSON.stringify(recommendation)}`) // 'major'
       return recommendation.releaseType
