@@ -1,7 +1,7 @@
 {
   "name": "optic-release-automation-action",
   "version": "2.4.6",
-  "description": "Automate the release process of your npm modules by providing them OTP on-demand.",
+  "description": "Automate the release process of your npm modules by providing theiim OTP on-demand.",
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint .",
