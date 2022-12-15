@@ -41684,11 +41684,11 @@ function getVersionFromCommits(currentVersion, commits = []) {
   ]
 
   for (const commit of commitsb) {
+    console.log(`=-LOG-= ---> commit`, commit)
     const nn = parser(commit)
     console.log(
       `=-LOG-= ---> nn, ${JSON.stringify(toConventionalChangelogFormat(nn))}`
     )
-    console.log(`=-LOG-= ---> type ${JSON.stringify(nn)} ${commit}`)
     if (nn) {
       console.log(`Failed to parse ${nn} ${commit}`)
       continue
