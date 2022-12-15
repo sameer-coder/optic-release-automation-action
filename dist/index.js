@@ -1817,6 +1817,18 @@ module.exports = AggregateError;
 
 /***/ }),
 
+/***/ 8912:
+/***/ ((module) => {
+
+"use strict";
+
+module.exports = function(val) {
+  return Array.isArray(val) ? val : [val];
+};
+
+
+/***/ }),
+
 /***/ 3018:
 /***/ ((module) => {
 
@@ -1940,6 +1952,56 @@ module.exports = (stack, options) => {
 		})
 		.join('\n');
 };
+
+
+/***/ }),
+
+/***/ 4623:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+var arrayify = __nccwpck_require__(8912);
+var dotPropGet = (__nccwpck_require__(2042).get);
+
+function compareFunc(prop) {
+  return function(a, b) {
+    var ret = 0;
+
+    arrayify(prop).some(function(el) {
+      var x;
+      var y;
+
+      if (typeof el === 'function') {
+        x = el(a);
+        y = el(b);
+      } else if (typeof el === 'string') {
+        x = dotPropGet(a, el);
+        y = dotPropGet(b, el);
+      } else {
+        x = a;
+        y = b;
+      }
+
+      if (x === y) {
+        ret = 0;
+        return;
+      }
+
+      if (typeof x === 'string' && typeof y === 'string') {
+        ret = x.localeCompare(y);
+        return ret !== 0;
+      }
+
+      ret = x < y ? -1 : 1;
+      return true;
+    });
+
+    return ret;
+  };
+}
+
+module.exports = compareFunc;
 
 
 /***/ }),
@@ -2090,6 +2152,396 @@ function u8Concat (parts) {
     }
   }
   return u8
+}
+
+
+/***/ }),
+
+/***/ 2429:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const { breakingHeaderPattern } = __nccwpck_require__(8236)()
+
+module.exports = (commit) => {
+  const match = commit.header.match(breakingHeaderPattern)
+  if (match && commit.notes.length === 0) {
+    const noteText = match[3] // the description of the change.
+    commit.notes.push({
+      text: noteText
+    })
+  }
+}
+
+
+/***/ }),
+
+/***/ 7333:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+const Q = __nccwpck_require__(6172)
+const parserOpts = __nccwpck_require__(8236)
+const writerOpts = __nccwpck_require__(382)
+
+module.exports = function (config) {
+  return Q.all([parserOpts(config), writerOpts(config)])
+    .spread((parserOpts, writerOpts) => {
+      return { parserOpts, writerOpts }
+    })
+}
+
+
+/***/ }),
+
+/***/ 7620:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+const addBangNotes = __nccwpck_require__(2429)
+const parserOpts = __nccwpck_require__(8236)
+
+module.exports = function (config) {
+  return {
+    parserOpts: parserOpts(config),
+
+    whatBump: (commits) => {
+      let level = 2
+      let breakings = 0
+      let features = 0
+
+      commits.forEach(commit => {
+        // adds additional breaking change notes
+        // for the special case, test(system)!: hello world, where there is
+        // a '!' but no 'BREAKING CHANGE' in body:
+        addBangNotes(commit)
+        if (commit.notes.length > 0) {
+          breakings += commit.notes.length
+          level = 0
+        } else if (commit.type === 'feat' || commit.type === 'feature') {
+          features += 1
+          if (level === 2) {
+            level = 1
+          }
+        }
+      })
+
+      if (config.preMajor && level < 2) {
+        level++
+      }
+
+      return {
+        level: level,
+        reason: breakings === 1
+          ? `There is ${breakings} BREAKING CHANGE and ${features} features`
+          : `There are ${breakings} BREAKING CHANGES and ${features} features`
+      }
+    }
+  }
+}
+
+
+/***/ }),
+
+/***/ 8761:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+const Q = __nccwpck_require__(6172)
+const _ = __nccwpck_require__(250)
+const conventionalChangelog = __nccwpck_require__(7333)
+const parserOpts = __nccwpck_require__(8236)
+const recommendedBumpOpts = __nccwpck_require__(7620)
+const writerOpts = __nccwpck_require__(382)
+
+module.exports = function (parameter) {
+  // parameter passed can be either a config object or a callback function
+  if (_.isFunction(parameter)) {
+    // parameter is a callback object
+    const config = {}
+    // FIXME: use presetOpts(config) for callback
+    Q.all([
+      conventionalChangelog(config),
+      parserOpts(config),
+      recommendedBumpOpts(config),
+      writerOpts(config)
+    ]).spread((conventionalChangelog, parserOpts, recommendedBumpOpts, writerOpts) => {
+      parameter(null, { gitRawCommitsOpts: { noMerges: null }, conventionalChangelog, parserOpts, recommendedBumpOpts, writerOpts })
+    })
+  } else {
+    const config = parameter || {}
+    return presetOpts(config)
+  }
+}
+
+function presetOpts (config) {
+  return Q.all([
+    conventionalChangelog(config),
+    parserOpts(config),
+    recommendedBumpOpts(config),
+    writerOpts(config)
+  ]).spread((conventionalChangelog, parserOpts, recommendedBumpOpts, writerOpts) => {
+    return { conventionalChangelog, parserOpts, recommendedBumpOpts, writerOpts }
+  })
+}
+
+
+/***/ }),
+
+/***/ 8236:
+/***/ ((module) => {
+
+"use strict";
+
+
+module.exports = function (config) {
+  config = defaultConfig(config)
+  return {
+    headerPattern: /^(\w*)(?:\((.*)\))?!?: (.*)$/,
+    breakingHeaderPattern: /^(\w*)(?:\((.*)\))?!: (.*)$/,
+    headerCorrespondence: [
+      'type',
+      'scope',
+      'subject'
+    ],
+    noteKeywords: ['BREAKING CHANGE', 'BREAKING-CHANGE'],
+    revertPattern: /^(?:Revert|revert:)\s"?([\s\S]+?)"?\s*This reverts commit (\w*)\./i,
+    revertCorrespondence: ['header', 'hash'],
+    issuePrefixes: config.issuePrefixes
+  }
+}
+
+// merge user set configuration with default configuration.
+function defaultConfig (config) {
+  config = config || {}
+  config.issuePrefixes = config.issuePrefixes || ['#']
+  return config
+}
+
+
+/***/ }),
+
+/***/ 382:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+const addBangNotes = __nccwpck_require__(2429)
+const compareFunc = __nccwpck_require__(4623)
+const Q = __nccwpck_require__(6172)
+const readFile = Q.denodeify((__nccwpck_require__(7147).readFile))
+const resolve = (__nccwpck_require__(1017).resolve)
+const releaseAsRe = /release-as:\s*\w*@?([0-9]+\.[0-9]+\.[0-9a-z]+(-[0-9a-z.]+)?)\s*/i
+
+/**
+ * Handlebar partials for various property substitutions based on commit context.
+ */
+const owner = '{{#if this.owner}}{{~this.owner}}{{else}}{{~@root.owner}}{{/if}}'
+const host = '{{~@root.host}}'
+const repository = '{{#if this.repository}}{{~this.repository}}{{else}}{{~@root.repository}}{{/if}}'
+
+module.exports = function (config) {
+  config = defaultConfig(config)
+  const commitUrlFormat = expandTemplate(config.commitUrlFormat, {
+    host,
+    owner,
+    repository
+  })
+  const compareUrlFormat = expandTemplate(config.compareUrlFormat, {
+    host,
+    owner,
+    repository
+  })
+  const issueUrlFormat = expandTemplate(config.issueUrlFormat, {
+    host,
+    owner,
+    repository,
+    id: '{{this.issue}}',
+    prefix: '{{this.prefix}}'
+  })
+
+  return Q.all([
+    readFile(__nccwpck_require__.ab + "template.hbs", 'utf-8'),
+    readFile(__nccwpck_require__.ab + "header.hbs", 'utf-8'),
+    readFile(__nccwpck_require__.ab + "commit.hbs", 'utf-8'),
+    readFile(__nccwpck_require__.ab + "footer.hbs", 'utf-8')
+  ])
+    .spread((template, header, commit, footer) => {
+      const writerOpts = getWriterOpts(config)
+
+      writerOpts.mainTemplate = template
+      writerOpts.headerPartial = header
+        .replace(/{{compareUrlFormat}}/g, compareUrlFormat)
+      writerOpts.commitPartial = commit
+        .replace(/{{commitUrlFormat}}/g, commitUrlFormat)
+        .replace(/{{issueUrlFormat}}/g, issueUrlFormat)
+      writerOpts.footerPartial = footer
+
+      return writerOpts
+    })
+}
+
+function findTypeEntry (types, commit) {
+  const typeKey = (commit.revert ? 'revert' : (commit.type || '')).toLowerCase()
+  return types.find((entry) => {
+    if (entry.type !== typeKey) {
+      return false
+    }
+    if (entry.scope && entry.scope !== commit.scope) {
+      return false
+    }
+    return true
+  })
+}
+
+function getWriterOpts (config) {
+  config = defaultConfig(config)
+
+  return {
+    transform: (commit, context) => {
+      let discard = true
+      const issues = []
+      const entry = findTypeEntry(config.types, commit)
+
+      // adds additional breaking change notes
+      // for the special case, test(system)!: hello world, where there is
+      // a '!' but no 'BREAKING CHANGE' in body:
+      addBangNotes(commit)
+
+      // Add an entry in the CHANGELOG if special Release-As footer
+      // is used:
+      if ((commit.footer && releaseAsRe.test(commit.footer)) ||
+          (commit.body && releaseAsRe.test(commit.body))) {
+        discard = false
+      }
+
+      commit.notes.forEach(note => {
+        note.title = 'BREAKING CHANGES'
+        discard = false
+      })
+
+      // breaking changes attached to any type are still displayed.
+      if (discard && (entry === undefined ||
+          entry.hidden)) return
+
+      if (entry) commit.type = entry.section
+
+      if (commit.scope === '*') {
+        commit.scope = ''
+      }
+
+      if (typeof commit.hash === 'string') {
+        commit.shortHash = commit.hash.substring(0, 7)
+      }
+
+      if (typeof commit.subject === 'string') {
+        // Issue URLs.
+        config.issuePrefixes.join('|')
+        const issueRegEx = '(' + config.issuePrefixes.join('|') + ')' + '([0-9]+)'
+        const re = new RegExp(issueRegEx, 'g')
+
+        commit.subject = commit.subject.replace(re, (_, prefix, issue) => {
+          issues.push(prefix + issue)
+          const url = expandTemplate(config.issueUrlFormat, {
+            host: context.host,
+            owner: context.owner,
+            repository: context.repository,
+            id: issue,
+            prefix: prefix
+          })
+          return `[${prefix}${issue}](${url})`
+        })
+        // User URLs.
+        commit.subject = commit.subject.replace(/\B@([a-z0-9](?:-?[a-z0-9/]){0,38})/g, (_, user) => {
+          // TODO: investigate why this code exists.
+          if (user.includes('/')) {
+            return `@${user}`
+          }
+
+          const usernameUrl = expandTemplate(config.userUrlFormat, {
+            host: context.host,
+            owner: context.owner,
+            repository: context.repository,
+            user: user
+          })
+
+          return `[@${user}](${usernameUrl})`
+        })
+      }
+
+      // remove references that already appear in the subject
+      commit.references = commit.references.filter(reference => {
+        if (issues.indexOf(reference.prefix + reference.issue) === -1) {
+          return true
+        }
+
+        return false
+      })
+
+      return commit
+    },
+    groupBy: 'type',
+    // the groupings of commit messages, e.g., Features vs., Bug Fixes, are
+    // sorted based on their probable importance:
+    commitGroupsSort: (a, b) => {
+      const commitGroupOrder = ['Reverts', 'Performance Improvements', 'Bug Fixes', 'Features']
+      const gRankA = commitGroupOrder.indexOf(a.title)
+      const gRankB = commitGroupOrder.indexOf(b.title)
+      if (gRankA >= gRankB) {
+        return -1
+      } else {
+        return 1
+      }
+    },
+    commitsSort: ['scope', 'subject'],
+    noteGroupsSort: 'title',
+    notesSort: compareFunc
+  }
+}
+
+// merge user set configuration with default configuration.
+function defaultConfig (config) {
+  config = config || {}
+  config.types = config.types || [
+    { type: 'feat', section: 'Features' },
+    { type: 'feature', section: 'Features' },
+    { type: 'fix', section: 'Bug Fixes' },
+    { type: 'perf', section: 'Performance Improvements' },
+    { type: 'revert', section: 'Reverts' },
+    { type: 'docs', section: 'Documentation', hidden: true },
+    { type: 'style', section: 'Styles', hidden: true },
+    { type: 'chore', section: 'Miscellaneous Chores', hidden: true },
+    { type: 'refactor', section: 'Code Refactoring', hidden: true },
+    { type: 'test', section: 'Tests', hidden: true },
+    { type: 'build', section: 'Build System', hidden: true },
+    { type: 'ci', section: 'Continuous Integration', hidden: true }
+  ]
+  config.issueUrlFormat = config.issueUrlFormat ||
+    '{{host}}/{{owner}}/{{repository}}/issues/{{id}}'
+  config.commitUrlFormat = config.commitUrlFormat ||
+    '{{host}}/{{owner}}/{{repository}}/commit/{{hash}}'
+  config.compareUrlFormat = config.compareUrlFormat ||
+    '{{host}}/{{owner}}/{{repository}}/compare/{{previousTag}}...{{currentTag}}'
+  config.userUrlFormat = config.userUrlFormat ||
+    '{{host}}/{{user}}'
+  config.issuePrefixes = config.issuePrefixes || ['#']
+
+  return config
+}
+
+// expand on the simple mustache-style templates supported in
+// configuration (we may eventually want to use handlebars for this).
+function expandTemplate (template, context) {
+  let expanded = template
+  Object.keys(context).forEach(key => {
+    expanded = expanded.replace(new RegExp(`{{${key}}}`, 'g'), context[key])
+  })
+  return expanded
 }
 
 
@@ -2993,6 +3445,156 @@ const dargs = (object, options) => {
 };
 
 module.exports = dargs;
+
+
+/***/ }),
+
+/***/ 2042:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+const isObj = __nccwpck_require__(1389);
+
+const disallowedKeys = [
+	'__proto__',
+	'prototype',
+	'constructor'
+];
+
+const isValidPath = pathSegments => !pathSegments.some(segment => disallowedKeys.includes(segment));
+
+function getPathSegments(path) {
+	const pathArray = path.split('.');
+	const parts = [];
+
+	for (let i = 0; i < pathArray.length; i++) {
+		let p = pathArray[i];
+
+		while (p[p.length - 1] === '\\' && pathArray[i + 1] !== undefined) {
+			p = p.slice(0, -1) + '.';
+			p += pathArray[++i];
+		}
+
+		parts.push(p);
+	}
+
+	if (!isValidPath(parts)) {
+		return [];
+	}
+
+	return parts;
+}
+
+module.exports = {
+	get(object, path, value) {
+		if (!isObj(object) || typeof path !== 'string') {
+			return value === undefined ? object : value;
+		}
+
+		const pathArray = getPathSegments(path);
+		if (pathArray.length === 0) {
+			return;
+		}
+
+		for (let i = 0; i < pathArray.length; i++) {
+			if (!Object.prototype.propertyIsEnumerable.call(object, pathArray[i])) {
+				return value;
+			}
+
+			object = object[pathArray[i]];
+
+			if (object === undefined || object === null) {
+				// `object` is either `undefined` or `null` so we want to stop the loop, and
+				// if this is not the last bit of the path, and
+				// if it did't return `undefined`
+				// it would return `null` if `object` is `null`
+				// but we want `get({foo: null}, 'foo.bar')` to equal `undefined`, or the supplied value, not `null`
+				if (i !== pathArray.length - 1) {
+					return value;
+				}
+
+				break;
+			}
+		}
+
+		return object;
+	},
+
+	set(object, path, value) {
+		if (!isObj(object) || typeof path !== 'string') {
+			return object;
+		}
+
+		const root = object;
+		const pathArray = getPathSegments(path);
+
+		for (let i = 0; i < pathArray.length; i++) {
+			const p = pathArray[i];
+
+			if (!isObj(object[p])) {
+				object[p] = {};
+			}
+
+			if (i === pathArray.length - 1) {
+				object[p] = value;
+			}
+
+			object = object[p];
+		}
+
+		return root;
+	},
+
+	delete(object, path) {
+		if (!isObj(object) || typeof path !== 'string') {
+			return false;
+		}
+
+		const pathArray = getPathSegments(path);
+
+		for (let i = 0; i < pathArray.length; i++) {
+			const p = pathArray[i];
+
+			if (i === pathArray.length - 1) {
+				delete object[p];
+				return true;
+			}
+
+			object = object[p];
+
+			if (!isObj(object)) {
+				return false;
+			}
+		}
+	},
+
+	has(object, path) {
+		if (!isObj(object) || typeof path !== 'string') {
+			return false;
+		}
+
+		const pathArray = getPathSegments(path);
+		if (pathArray.length === 0) {
+			return false;
+		}
+
+		// eslint-disable-next-line unicorn/no-for-loop
+		for (let i = 0; i < pathArray.length; i++) {
+			if (isObj(object)) {
+				if (!(pathArray[i] in object)) {
+					return false;
+				}
+
+				object = object[pathArray[i]];
+			} else {
+				return false;
+			}
+		}
+
+		return true;
+	}
+};
 
 
 /***/ }),
@@ -4864,6 +5466,20 @@ if (typeof Object.create === 'function') {
     }
   }
 }
+
+
+/***/ }),
+
+/***/ 1389:
+/***/ ((module) => {
+
+"use strict";
+
+
+module.exports = value => {
+	const type = typeof value;
+	return value !== null && (type === 'object' || type === 'function');
+};
 
 
 /***/ }),
@@ -50304,6 +50920,7 @@ module.exports = async function ({ github, context, inputs }) {
 
 const semver = __nccwpck_require__(1383)
 const conventionalRecommendedBump = __nccwpck_require__(7011)
+const config = __nccwpck_require__(8761)
 
 async function getAutoBumpedVersionOld({ github, context }) {
   const { owner, repo } = context.repo
@@ -50466,7 +51083,9 @@ async function getCommitMessagesSinceLatestRelease({
 async function getAutoBumpedVersion() {
   conventionalRecommendedBump(
     {
-      preset: `angular`,
+      preset: {
+        name: 'conventionalchangelog',
+      },
     },
     (error, recommendation) => {
       if (error) {

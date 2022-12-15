@@ -2,6 +2,7 @@
 
 const semver = require('semver')
 const conventionalRecommendedBump = require(`conventional-recommended-bump`)
+const config = require('conventional-changelog-conventionalcommits')
 
 async function getAutoBumpedVersionOld({ github, context }) {
   const { owner, repo } = context.repo
@@ -164,7 +165,9 @@ async function getCommitMessagesSinceLatestRelease({
 async function getAutoBumpedVersion() {
   conventionalRecommendedBump(
     {
-      preset: `angular`,
+      preset: {
+        name: 'conventionalchangelog',
+      },
     },
     (error, recommendation) => {
       if (error) {
