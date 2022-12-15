@@ -60,7 +60,7 @@ function getVersionFromCommits(currentVersion, commits = []) {
   const commitsb = [
     `feat: send an email to the customer when a product is shipped`,
     'fix: some other breaking change',
-    'feat!: some other breaking change',
+    'BREAKING CHANGE: some breaking change',
   ]
 
   for (const commit of commitsb) {
