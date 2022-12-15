@@ -40693,8 +40693,7 @@ function getVersionFromCommits(currentVersion, commits = []) {
   let isMinor = false
 
   const commitsb = [
-    `feat: allow provided config object to extend other configs 
-BREAKING CHANGE: extends key in config file is now used for extending other config files`,
+    `feat!: send an email to the customer when a product is shipped`,
   ]
 
   for (const commit of commitsb) {
