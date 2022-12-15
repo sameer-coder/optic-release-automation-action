@@ -2,6 +2,7 @@
 
 const semver = require('semver')
 const conventionalCommitsParser = require('conventional-commits-parser')
+const { parser } = require('@conventional-commits/parser')
 
 async function getAutoBumpedVersion({ github, context }) {
   const { owner, repo } = context.repo
@@ -55,11 +56,14 @@ function getVersionFromCommits(currentVersion, commits = []) {
 
   const commitsb = [
     `feat!: send an email to the customer when a product is shipped`,
+    'BREAKING CHANGE: some other breaking change',
   ]
 
   for (const commit of commitsb) {
     let cc = 'BREAKING CHANGE: some other breaking change'
     const type = conventionalCommitsParser.sync(commit)
+    const nn = parser(commit)
+    console.log(`=-LOG-= ---> nn, ${JSON.stringify(nn)}`)
     console.log(`=-LOG-= ---> type ${JSON.stringify(type)} ${cc}`)
     if (!type) {
       console.log(`Failed to parse ${type} ${commit}`)
