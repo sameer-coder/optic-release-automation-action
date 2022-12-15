@@ -54,7 +54,7 @@ function getVersionFromCommits(currentVersion, commits = []) {
   let isMinor = false
 
   for (const commit of commits) {
-    let cc = 'feat: message'
+    let cc = 'BREAKING CHANGE: message'
     const type = conventionalCommitsParser.sync(cc)
     console.log(`=-LOG-= ---> type ${JSON.stringify(type)} ${cc}`)
     if (!type) {
