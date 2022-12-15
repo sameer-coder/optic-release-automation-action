@@ -1,7 +1,7 @@
 'use strict'
 
 const semver = require('semver')
-const conventionalCommitsParser = require('conventional-commits-parser')
+const { logError } = require('../log')
 const {
   parser,
   toConventionalChangelogFormat,
@@ -44,8 +44,15 @@ async function getAutoBumpedVersion({ github, context }) {
 }
 
 function getVersionFromCommits(currentVersion, commits = []) {
-  let { major, minor, patch } = semver.parse(currentVersion)
+  const versionMap = {
+    MAJOR: 'major',
+    MINOR: 'minor',
+    PATCH: 'patch',
+  }
+  let bumpType = versionMap.PATCH
 
+  // Parse current version
+  let { major, minor, patch } = semver.parse(currentVersion)
   if (
     !Number.isInteger(major) ||
     !Number.isInteger(minor) ||
@@ -54,39 +61,41 @@ function getVersionFromCommits(currentVersion, commits = []) {
     throw new Error('Invalid major/minor/patch version found')
   }
 
+  // Determine bump version number based on commits
   let isBreaking = false
   let isMinor = false
 
-  const commitsb = [
-    `feat: send an email to the customer when a product is shipped`,
-    'fix: some other breaking change',
-    'fix!: some other breaking change',
-    'chore(scope with spaces): some chore\n' +
-      'bla bla bla\n\n' +
-      'BREAKING CHANGE: some other breaking change\n',
-  ]
+  for (const commit of commits) {
+    let parsedCommit = {}
+    try {
+      parsedCommit = toConventionalChangelogFormat(parser(commit))
+    } catch (error) {
+      logError(`Error parsing commit - ${commit}. Error - ${error.message}`)
+      continue
+    }
 
-  for (const commit of commitsb) {
-    console.log(`=-LOG-= ---> commit`, commit)
-    const nn = parser(commit)
-    console.log(
-      `=-LOG-= ---> nn, ${JSON.stringify(toConventionalChangelogFormat(nn))}`
-    )
-    continue
+    const { type = null, notes = [] } = parsedCommit
 
-    const type = 'io'
+    bumpType = type === 'feat' ? versionMap.MINOR : versionMap.PATCH
 
-    if (type === 'major' && major === '0') {
+    // check for breaking change
+    for (const note of notes) {
+      if (note.title === 'BREAKING CHANGE') {
+        bumpType = versionMap.MAJOR
+      }
+    }
+
+    if (bumpType === versionMap.MAJOR && major === '0') {
       // According to semver, major version zero (0.y.z) is for initial
       // development. Anything MAY change at any time.
       // Breaking changes MUST NOT automatically bump the major version
       // from 0.x to 1.x.
       isMinor = true
       break
-    } else if (type === 'major') {
+    } else if (bumpType === versionMap.MAJOR) {
       isBreaking = true
       break
-    } else if (type === 'minor') {
+    } else if (bumpType === versionMap.MINOR) {
       isMinor = true
     }
   }
