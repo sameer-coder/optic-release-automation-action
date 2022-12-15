@@ -54,9 +54,9 @@ function getVersionFromCommits(currentVersion, commits = []) {
   let isMinor = false
 
   for (const commit of commits) {
-    const { type = null } = conventionalCommitsParser.sync(commit)
+    const type = conventionalCommitsParser.sync(commit)
     if (!type) {
-      console.log(`Failed to parse ${commit}`)
+      console.log(`Failed to parse ${type} ${commit}`)
       continue
     }
 
