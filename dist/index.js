@@ -41622,7 +41622,10 @@ module.exports = async function ({ github, context, inputs }) {
 
 const semver = __nccwpck_require__(1383)
 const conventionalCommitsParser = __nccwpck_require__(1655)
-const { parser } = __nccwpck_require__(4523)
+const {
+  parser,
+  toConventionalChangelogFormat,
+} = __nccwpck_require__(4523)
 
 async function getAutoBumpedVersion({ github, context }) {
   const { owner, repo } = context.repo
@@ -41681,15 +41684,17 @@ function getVersionFromCommits(currentVersion, commits = []) {
   ]
 
   for (const commit of commitsb) {
-    let type = 'BREAKING CHANGE: some other breaking change'
-    // const type = conventionalCommitsParser.sync(commit)
     const nn = parser(commit)
-    console.log(`=-LOG-= ---> nn, ${JSON.stringify(nn)}`)
-    // console.log(`=-LOG-= ---> type ${JSON.stringify(type)} ${cc}`)
-    if (type) {
+    console.log(
+      `=-LOG-= ---> nn, ${JSON.stringify(toConventionalChangelogFormat(nn))}`
+    )
+    console.log(`=-LOG-= ---> type ${JSON.stringify(nn)} ${commit}`)
+    if (nn) {
       console.log(`Failed to parse ${nn} ${commit}`)
       continue
     }
+
+    const type = 'io'
 
     if (type === 'major' && major === '0') {
       // According to semver, major version zero (0.y.z) is for initial

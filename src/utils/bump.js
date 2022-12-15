@@ -2,7 +2,10 @@
 
 const semver = require('semver')
 const conventionalCommitsParser = require('conventional-commits-parser')
-const { parser } = require('@conventional-commits/parser')
+const {
+  parser,
+  toConventionalChangelogFormat,
+} = require('@conventional-commits/parser')
 
 async function getAutoBumpedVersion({ github, context }) {
   const { owner, repo } = context.repo
@@ -61,15 +64,17 @@ function getVersionFromCommits(currentVersion, commits = []) {
   ]
 
   for (const commit of commitsb) {
-    let type = 'BREAKING CHANGE: some other breaking change'
-    // const type = conventionalCommitsParser.sync(commit)
     const nn = parser(commit)
-    console.log(`=-LOG-= ---> nn, ${JSON.stringify(nn)}`)
-    // console.log(`=-LOG-= ---> type ${JSON.stringify(type)} ${cc}`)
-    if (type) {
+    console.log(
+      `=-LOG-= ---> nn, ${JSON.stringify(toConventionalChangelogFormat(nn))}`
+    )
+    console.log(`=-LOG-= ---> type ${JSON.stringify(nn)} ${commit}`)
+    if (nn) {
       console.log(`Failed to parse ${nn} ${commit}`)
       continue
     }
+
+    const type = 'io'
 
     if (type === 'major' && major === '0') {
       // According to semver, major version zero (0.y.z) is for initial
