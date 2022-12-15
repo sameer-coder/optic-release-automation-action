@@ -60,7 +60,10 @@ function getVersionFromCommits(currentVersion, commits = []) {
   const commitsb = [
     `feat: send an email to the customer when a product is shipped`,
     'fix: some other breaking change',
-    'BREAKING CHANGE: some breaking change',
+    'fix!: some other breaking change',
+    'chore(scope with spaces): some chore\n' +
+      'bla bla bla\n\n' +
+      'BREAKING CHANGE: some other breaking change\n',
   ]
 
   for (const commit of commitsb) {
@@ -69,10 +72,7 @@ function getVersionFromCommits(currentVersion, commits = []) {
     console.log(
       `=-LOG-= ---> nn, ${JSON.stringify(toConventionalChangelogFormat(nn))}`
     )
-    if (nn) {
-      console.log(`Failed to parse ${nn} ${commit}`)
-      continue
-    }
+    continue
 
     const type = 'io'
 
