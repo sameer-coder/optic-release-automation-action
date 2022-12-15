@@ -167,7 +167,7 @@ async function getAutoBumpedVersion() {
     {
       config,
       whatBump: commits => {
-        console.log(`commit is ${commits}`)
+        console.log(`commit is ${JSON.stringify(commits)}`)
       },
       // preset: {
       //   name: 'conventionalchangelog',
