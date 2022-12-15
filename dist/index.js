@@ -51083,9 +51083,10 @@ async function getCommitMessagesSinceLatestRelease({
 async function getAutoBumpedVersion() {
   conventionalRecommendedBump(
     {
-      preset: {
-        name: 'conventionalchangelog',
-      },
+      config,
+      // preset: {
+      //   name: 'conventionalchangelog',
+      // },
     },
     (error, recommendation) => {
       if (error) {
