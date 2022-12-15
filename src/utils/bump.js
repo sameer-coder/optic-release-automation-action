@@ -54,27 +54,8 @@ function getVersionFromCommits(currentVersion, commits = []) {
   let isMinor = false
 
   const commitsb = [
-    'feat(ng-list): Allow custom separator\n' +
-      'bla bla bla\n\n' +
-      'Closes #123\nCloses #25\nFixes #33\n',
-
-    'feat(scope): broadcast $destroy event on scope destruction\n' +
-      'bla bla bla\n\n' +
-      'BREAKING CHANGE: some breaking change\n',
-
-    'fix(zzz): Very cool commit\n' +
-      'bla bla bla\n\n' +
-      'Closes #2, #3. Resolves #4. Fixes #5. Fixes #6.\n' +
-      'What not ?\n',
-
-    'chore(scope with spaces): some chore\n' +
-      'bla bla bla\n\n' +
-      'BREAKING CHANGE: some other breaking change\n',
-
-    'Revert "throw an error if a callback is passed to animate methods"\n\n' +
-      'This reverts commit 9bb4d6ccbe80b7704c6b7f53317ca8146bc103ca.\n\n' +
-      '-hash-\n' +
-      'd7a40a29214f37d469e57d730dfd042b639d4d1f',
+    `feat: allow provided config object to extend other configs 
+BREAKING CHANGE: extends key in config file is now used for extending other config files`,
   ]
 
   for (const commit of commitsb) {
