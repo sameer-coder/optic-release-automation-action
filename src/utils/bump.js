@@ -44,6 +44,7 @@ async function getAutoBumpedVersion({ github, context }) {
 }
 
 function getVersionFromCommits(currentVersion, commits = []) {
+  console.log(`=-LOG-= ---> currentVersion`, currentVersion)
   const versionMap = {
     MAJOR: 'major',
     MINOR: 'minor',
