@@ -8369,8 +8369,6 @@ function conventionalRecommendedBump (optionsArgument, parserOptsArgument, cbArg
       throw Error('whatBump must be a function')
     }
 
-    throw Error('ttttt')
-
 
     // TODO: For now we defer to `config.recommendedBumpOpts.parserOpts` if it exists, as our initial refactor
     // efforts created a `parserOpts` object under the `recommendedBumpOpts` object in each preset package.
@@ -58049,7 +58047,7 @@ async function getBumpedVersionNumber({ github, context, inputs }) {
 async function getAutoBumpedVersion() {
   try {
     const { releaseType } = await conventionalRecommendedBumpAsync({
-      preset: 'conventionalcommits',
+      preset: 'conventional-changelog-conventionalcommits',
     })
     return releaseType
   } catch (error) {

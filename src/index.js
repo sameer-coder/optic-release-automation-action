@@ -38,7 +38,7 @@ async function getBumpedVersionNumber({ github, context, inputs }) {
 async function getAutoBumpedVersion() {
   try {
     const { releaseType } = await conventionalRecommendedBumpAsync({
-      preset: 'conventionalcommits',
+      preset: 'conventional-changelog-conventionalcommits',
     })
     return releaseType
   } catch (error) {
