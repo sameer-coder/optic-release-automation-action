@@ -41,7 +41,7 @@ async function getAutoBumpedVersion() {
     const { releaseType } = await conventionalRecommendedBumpAsync({ config })
     return releaseType
   } catch (error) {
-    logError(error)
+    logError(`error is ${JSON.stringify(error)}`)
     core.setFailed(error.message)
     throw error
   }
