@@ -13,6 +13,7 @@ const conventionalRecommendedBumpAsync = util.promisify(
 
 async function runAction({ github, context, inputs, packageVersion }) {
   if (context.eventName === 'workflow_dispatch') {
+    console.log(`packageVersion is ${packageVersion}`)
     return openPr({ context, inputs, packageVersion })
   }
 
