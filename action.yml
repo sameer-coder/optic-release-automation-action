@@ -90,9 +90,7 @@ runs:
         github-token: ${{ inputs.github-token }}
         script: |
           const { getBumpedVersionNumber } = require('${{ github.action_path }}/dist/index.js')
-          const ver = await getBumpedVersionNumber({ github, context, inputs: ${{ toJSON(inputs) }} })
-          const ver1 = ver.replace('""','')
-          return ver1.replace('""','')
+          return await getBumpedVersionNumber({ github, context, inputs: ${{ toJSON(inputs) }} })
 
     - name: Build the package
       if: ${{ inputs.build-command }}
@@ -110,7 +108,7 @@ runs:
         script: |
           const { runAction } = require('${{ github.action_path }}/dist/index.js')
           console.log(${{ steps.version-bump.outputs.result }})
-          await runAction({ github, context, inputs: ${{ toJSON(inputs) }}, packageVersion: ${{ steps.version-bump.outputs.result }} })
+          await runAction({ github, context, inputs: ${{ toJSON(inputs) }}, packageVersion: 'test' })
 
     - name: Release the package
       uses: actions/github-script@v6
