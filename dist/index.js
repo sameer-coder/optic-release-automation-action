@@ -58663,7 +58663,7 @@ async function getBumpedVersionNumber({ github, context, inputs }) {
 
 async function getAutoBumpedVersion() {
   try {
-    const { releaseType } = await conventionalRecommendedBumpAsync(config)
+    const { releaseType } = await conventionalRecommendedBumpAsync({ config })
     return releaseType
   } catch (error) {
     core.setFailed(error.message)
