@@ -1,16 +1,19 @@
 'use strict'
 
-// const openPr = require('./openPr')
+const conventionalRecommendedBump = require('conventional-recommended-bump')
+const openPr = require('./openPr')
 const release = require('./release')
-const { getAutoBumpedVersion } = require('./utils/bump')
 const { runSpawn } = require('./utils/runSpawn')
-const { logError, logInfo } = require('./log')
-const conventionalRecommendedBump = require(`conventional-recommended-bump`)
+const { logError } = require('./log')
+const core = require('@actions/core')
+const util = require('util')
+const conventionalRecommendedBumpAsync = util.promisify(
+  conventionalRecommendedBump
+)
 
 async function runAction({ github, context, inputs, packageVersion }) {
   if (context.eventName === 'workflow_dispatch') {
-    logInfo(`packageVersion = ${packageVersion}`)
-    return
+    return openPr({ context, inputs, packageVersion })
   }
 
   if (context.eventName === 'pull_request') {
@@ -20,33 +23,29 @@ async function runAction({ github, context, inputs, packageVersion }) {
   logError('Unsupported event')
 }
 
-async function getBumpedVersionNumber({ inputs }) {
+async function getBumpedVersionNumber({ github, context, inputs }) {
   const newVersion =
-    inputs.semver === 'auto' ? await conventionalRecommended() : inputs.semver
-
-  logInfo(`=-LOG-= ---> newVersion ${newVersion}`)
+    inputs.semver === 'auto'
+      ? await getAutoBumpedVersion({ github, context })
+      : inputs.semver
 
   const run = runSpawn()
   await run('npm', ['version', '--no-git-tag-version', newVersion])
   return await run('npm', ['pkg', 'get', 'version'])
 }
 
-async function conventionalRecommended() {
-  await conventionalRecommendedBump(
-    {
-      preset: `angular`,
-    },
-    (error, recommendation) => {
-      if (error) {
-        logError(error.message)
-        throw error
-      }
-      logInfo(recommendation.releaseType) // 'major'
-      return recommendation.releaseType
-    }
-  )
+async function getAutoBumpedVersion() {
+  const { error, recommendation } = await conventionalRecommendedBumpAsync({
+    preset: 'conventionalcommits',
+  })
+  if (error) {
+    core.setFailed(error.message)
+    throw error
+  }
+  return recommendation.releaseType
 }
 
-module.exports.runAction = runAction
-module.exports.getBumpedVersionNumber = getBumpedVersionNumber
-module.exports.getAutoBumpedVersion = getAutoBumpedVersion
+module.exports = {
+  runAction,
+  getBumpedVersionNumber,
+}
