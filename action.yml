@@ -85,9 +85,9 @@ runs:
     - name: Version bump
       uses: actions/github-script@v6
       id: version-bump
-      result-encoding: string
       if: github.event_name == 'workflow_dispatch'
       with:
+        result-encoding: string
         github-token: ${{ inputs.github-token }}
         script: |
           const { getBumpedVersionNumber } = require('${{ github.action_path }}/dist/index.js')
