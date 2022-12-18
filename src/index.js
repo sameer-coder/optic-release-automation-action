@@ -6,6 +6,7 @@ const { runSpawn } = require('./utils/runSpawn')
 const { logError } = require('./log')
 const core = require('@actions/core')
 const util = require('util')
+const config = require('conventional-changelog-conventionalcommits')
 const conventionalRecommendedBump = require('conventional-recommended-bump')
 const conventionalRecommendedBumpAsync = util.promisify(
   conventionalRecommendedBump
@@ -37,11 +38,7 @@ async function getBumpedVersionNumber({ github, context, inputs }) {
 
 async function getAutoBumpedVersion() {
   try {
-    const { releaseType } = await conventionalRecommendedBumpAsync({
-      preset: {
-        name: 'conventionalcommits',
-      },
-    })
+    const { releaseType } = await conventionalRecommendedBumpAsync(config)
     return releaseType
   } catch (error) {
     core.setFailed(error.message)
