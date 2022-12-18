@@ -58034,14 +58034,12 @@ async function runAction({ github, context, inputs, packageVersion }) {
 }
 
 async function getBumpedVersionNumber({ github, context, inputs }) {
-  const run = runSpawn()
-
-  console.log('listing-', await run('npm', ['list', '--depth=0']))
   const newVersion =
     inputs.semver === 'auto'
       ? await getAutoBumpedVersion({ github, context })
       : inputs.semver
 
+  const run = runSpawn()
   await run('npm', ['version', '--no-git-tag-version', newVersion])
   return await run('npm', ['pkg', 'get', 'version'])
 }
@@ -58049,7 +58047,9 @@ async function getBumpedVersionNumber({ github, context, inputs }) {
 async function getAutoBumpedVersion() {
   try {
     const { releaseType } = await conventionalRecommendedBumpAsync({
-      preset: 'conventionalcommits',
+      preset: {
+        name: 'conventionalcommits',
+      },
     })
     return releaseType
   } catch (error) {
