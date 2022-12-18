@@ -28,7 +28,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.issue = exports.issueCommand = void 0;
 const os = __importStar(__nccwpck_require__(2037));
-const utils_1 = __nccwpck_require__(6321);
+const utils_1 = __nccwpck_require__(5278);
 /**
  * Commands
  *
@@ -137,7 +137,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getIDToken = exports.getState = exports.saveState = exports.group = exports.endGroup = exports.startGroup = exports.info = exports.notice = exports.warning = exports.error = exports.debug = exports.isDebug = exports.setFailed = exports.setCommandEcho = exports.setOutput = exports.getBooleanInput = exports.getMultilineInput = exports.getInput = exports.addPath = exports.setSecret = exports.exportVariable = exports.ExitCode = void 0;
 const command_1 = __nccwpck_require__(7351);
 const file_command_1 = __nccwpck_require__(717);
-const utils_1 = __nccwpck_require__(6321);
+const utils_1 = __nccwpck_require__(5278);
 const os = __importStar(__nccwpck_require__(2037));
 const path = __importStar(__nccwpck_require__(1017));
 const oidc_utils_1 = __nccwpck_require__(8041);
@@ -475,7 +475,7 @@ exports.prepareKeyValueMessage = exports.issueFileCommand = void 0;
 const fs = __importStar(__nccwpck_require__(7147));
 const os = __importStar(__nccwpck_require__(2037));
 const uuid_1 = __nccwpck_require__(5840);
-const utils_1 = __nccwpck_require__(6321);
+const utils_1 = __nccwpck_require__(5278);
 function issueFileCommand(command, message) {
     const filePath = process.env[`GITHUB_${command}`];
     if (!filePath) {
@@ -947,7 +947,7 @@ exports.summary = _summary;
 
 /***/ }),
 
-/***/ 6321:
+/***/ 5278:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -4339,7 +4339,7 @@ exports.request = request;
 const Utils = __nccwpck_require__(5182);
 const pth = __nccwpck_require__(1017);
 const ZipEntry = __nccwpck_require__(4057);
-const ZipFile = __nccwpck_require__(161);
+const ZipFile = __nccwpck_require__(7744);
 
 const get_Bool = (val, def) => (typeof val === "boolean" ? val : def);
 const get_Str = (val, def) => (typeof val === "string" ? val : def);
@@ -6778,7 +6778,7 @@ module.exports = function (/*Buffer*/ input) {
 
 /***/ }),
 
-/***/ 161:
+/***/ 7744:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const ZipEntry = __nccwpck_require__(4057);
@@ -8368,6 +8368,9 @@ function conventionalRecommendedBump (optionsArgument, parserOptsArgument, cbArg
     if (typeof whatBump !== 'function') {
       throw Error('whatBump must be a function')
     }
+
+    throw Error('ttttt')
+
 
     // TODO: For now we defer to `config.recommendedBumpOpts.parserOpts` if it exists, as our initial refactor
     // efforts created a `parserOpts` object under the `recommendedBumpOpts` object in each preset package.
@@ -17625,7 +17628,7 @@ module.exports = isArrayLike;
 
 /* module decorator */ module = __nccwpck_require__.nmd(module);
 var root = __nccwpck_require__(9882),
-    stubFalse = __nccwpck_require__(7744);
+    stubFalse = __nccwpck_require__(1389);
 
 /** Detect free variable `exports`. */
 var freeExports =  true && exports && !exports.nodeType && exports;
@@ -35308,7 +35311,7 @@ module.exports = keysIn;
 
 /***/ }),
 
-/***/ 7744:
+/***/ 1389:
 /***/ ((module) => {
 
 /**
@@ -47542,7 +47545,7 @@ var objectKeys = Object.keys || function (obj) {
 
 module.exports = Duplex;
 
-var Readable = __nccwpck_require__(1433);
+var Readable = __nccwpck_require__(2852);
 
 var Writable = __nccwpck_require__(6993);
 
@@ -47689,7 +47692,7 @@ PassThrough.prototype._transform = function (chunk, encoding, cb) {
 
 /***/ }),
 
-/***/ 1433:
+/***/ 2852:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -47764,7 +47767,7 @@ if (debugUtil && debugUtil.debuglog) {
 /*</replacement>*/
 
 
-var BufferList = __nccwpck_require__(2746);
+var BufferList = __nccwpck_require__(6522);
 
 var destroyImpl = __nccwpck_require__(7049);
 
@@ -49091,7 +49094,7 @@ Writable.WritableState = WritableState;
 /*<replacement>*/
 
 var internalUtil = {
-  deprecate: __nccwpck_require__(5278)
+  deprecate: __nccwpck_require__(7127)
 };
 /*</replacement>*/
 
@@ -49946,7 +49949,7 @@ module.exports = createReadableStreamAsyncIterator;
 
 /***/ }),
 
-/***/ 2746:
+/***/ 6522:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -50612,7 +50615,7 @@ if (process.env.READABLE_STREAM === 'disable' && Stream) {
   Object.assign(module.exports, Stream);
   module.exports.Stream = Stream;
 } else {
-  exports = module.exports = __nccwpck_require__(1433);
+  exports = module.exports = __nccwpck_require__(2852);
   exports.Stream = Stream || exports;
   exports.Readable = exports;
   exports.Writable = __nccwpck_require__(6993);
@@ -54879,7 +54882,7 @@ exports.getUserAgent = getUserAgent;
 
 /***/ }),
 
-/***/ 5278:
+/***/ 7127:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 
@@ -54972,7 +54975,7 @@ var _validate = _interopRequireDefault(__nccwpck_require__(6900));
 
 var _stringify = _interopRequireDefault(__nccwpck_require__(8950));
 
-var _parse = _interopRequireDefault(__nccwpck_require__(4848));
+var _parse = _interopRequireDefault(__nccwpck_require__(2746));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -55023,7 +55026,7 @@ exports["default"] = _default;
 
 /***/ }),
 
-/***/ 4848:
+/***/ 2746:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -55348,7 +55351,7 @@ exports.URL = exports.DNS = void 0;
 
 var _stringify = _interopRequireDefault(__nccwpck_require__(8950));
 
-var _parse = _interopRequireDefault(__nccwpck_require__(4848));
+var _parse = _interopRequireDefault(__nccwpck_require__(2746));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -58008,13 +58011,13 @@ exports.APP_NAME = 'optic-release-automation[bot]'
 "use strict";
 
 
-const conventionalRecommendedBump = __nccwpck_require__(7011)
 const openPr = __nccwpck_require__(1515)
 const release = __nccwpck_require__(2026)
 const { runSpawn } = __nccwpck_require__(2137)
 const { logError } = __nccwpck_require__(653)
 const core = __nccwpck_require__(2186)
 const util = __nccwpck_require__(3837)
+const conventionalRecommendedBump = __nccwpck_require__(7011)
 const conventionalRecommendedBumpAsync = util.promisify(
   conventionalRecommendedBump
 )
@@ -58044,20 +58047,23 @@ async function getBumpedVersionNumber({ github, context, inputs }) {
 }
 
 async function getAutoBumpedVersion() {
-  const { error, recommendation } = await conventionalRecommendedBumpAsync({
-    preset: 'conventionalcommits',
-  })
-  if (error) {
+  try {
+    const { releaseType } = await conventionalRecommendedBumpAsync({
+      preset: 'conventionalcommits',
+    })
+    return releaseType
+  } catch (error) {
     core.setFailed(error.message)
     throw error
   }
-  return recommendation.releaseType
 }
 
 module.exports = {
   runAction,
   getBumpedVersionNumber,
 }
+
+getAutoBumpedVersion().catch(console.log)
 
 
 /***/ }),
@@ -58228,7 +58234,7 @@ const { callApi } = __nccwpck_require__(4235)
 const { tagVersionInGit } = __nccwpck_require__(9143)
 const { runSpawn } = __nccwpck_require__(2137)
 const { revertCommit } = __nccwpck_require__(5765)
-const { publishToNpm } = __nccwpck_require__(5599)
+const { publishToNpm } = __nccwpck_require__(1433)
 const { notifyIssues } = __nccwpck_require__(8361)
 const { logError, logInfo, logWarning } = __nccwpck_require__(653)
 
@@ -58699,7 +58705,7 @@ exports.notifyIssues = notifyIssues
 
 /***/ }),
 
-/***/ 5599:
+/***/ 1433:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";

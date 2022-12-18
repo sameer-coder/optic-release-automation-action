@@ -1,12 +1,12 @@
 'use strict'
 
-const conventionalRecommendedBump = require('conventional-recommended-bump')
 const openPr = require('./openPr')
 const release = require('./release')
 const { runSpawn } = require('./utils/runSpawn')
 const { logError } = require('./log')
 const core = require('@actions/core')
 const util = require('util')
+const conventionalRecommendedBump = require('conventional-recommended-bump')
 const conventionalRecommendedBumpAsync = util.promisify(
   conventionalRecommendedBump
 )
@@ -36,17 +36,20 @@ async function getBumpedVersionNumber({ github, context, inputs }) {
 }
 
 async function getAutoBumpedVersion() {
-  const { error, recommendation } = await conventionalRecommendedBumpAsync({
-    preset: 'conventionalcommits',
-  })
-  if (error) {
+  try {
+    const { releaseType } = await conventionalRecommendedBumpAsync({
+      preset: 'conventionalcommits',
+    })
+    return releaseType
+  } catch (error) {
     core.setFailed(error.message)
     throw error
   }
-  return recommendation.releaseType
 }
 
 module.exports = {
   runAction,
   getBumpedVersionNumber,
 }
+
+getAutoBumpedVersion().catch(console.log)
