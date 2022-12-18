@@ -25,6 +25,7 @@ async function runAction({ github, context, inputs, packageVersion }) {
 }
 
 async function getBumpedVersionNumber({ github, context, inputs }) {
+  console.log('listing-', await run('npm', ['list', '--depth=0']))
   const newVersion =
     inputs.semver === 'auto'
       ? await getAutoBumpedVersion({ github, context })
@@ -38,7 +39,7 @@ async function getBumpedVersionNumber({ github, context, inputs }) {
 async function getAutoBumpedVersion() {
   try {
     const { releaseType } = await conventionalRecommendedBumpAsync({
-      preset: 'conventional-changelog-conventionalcommits',
+      preset: 'conventionalcommits',
     })
     return releaseType
   } catch (error) {
