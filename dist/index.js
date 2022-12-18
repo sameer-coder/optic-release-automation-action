@@ -58640,7 +58640,7 @@ const conventionalRecommendedBumpAsync = util.promisify(
 async function runAction({ github, context, inputs, packageVersion }) {
   if (context.eventName === 'workflow_dispatch') {
     console.log(`packageVersion is ${packageVersion}`)
-    // return openPr({ context, inputs, packageVersion })
+    return openPr({ context, inputs, packageVersion })
   }
 
   if (context.eventName === 'pull_request') {
@@ -58666,7 +58666,6 @@ async function getAutoBumpedVersion() {
     const { releaseType } = await conventionalRecommendedBumpAsync({ config })
     return releaseType
   } catch (error) {
-    logError(`error is ${JSON.stringify(error)}`)
     core.setFailed(error.message)
     throw error
   }

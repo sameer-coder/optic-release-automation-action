@@ -108,7 +108,7 @@ runs:
         script: |
           const { runAction } = require('${{ github.action_path }}/dist/index.js')
           console.log(${{ steps.version-bump.outputs.result }})
-          await runAction({ github, context, inputs: ${{ toJSON(inputs) }}, packageVersion: 'test' })
+          await runAction({ github, context, inputs: ${{ toJSON(inputs) }}, packageVersion: ${{ steps.version-bump.outputs.result }} })
 
     - name: Release the package
       uses: actions/github-script@v6
