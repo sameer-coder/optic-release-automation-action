@@ -5,6 +5,7 @@ const release = require('./release')
 const { getAutoBumpedVersion } = require('./utils/bump')
 const { runSpawn } = require('./utils/runSpawn')
 const { logError, logInfo } = require('./log')
+const conventionalRecommendedBump = require(`conventional-recommended-bump`)
 
 async function runAction({ github, context, inputs, packageVersion }) {
   if (context.eventName === 'workflow_dispatch') {
@@ -19,15 +20,31 @@ async function runAction({ github, context, inputs, packageVersion }) {
   logError('Unsupported event')
 }
 
-async function getBumpedVersionNumber({ github, context, inputs }) {
+async function getBumpedVersionNumber({ inputs }) {
   const newVersion =
-    inputs.semver === 'auto'
-      ? await getAutoBumpedVersion({ github, context })
-      : inputs.semver
+    inputs.semver === 'auto' ? await conventionalRecommended() : inputs.semver
+
+  logInfo(`=-LOG-= ---> newVersion ${newVersion}`)
 
   const run = runSpawn()
   await run('npm', ['version', '--no-git-tag-version', newVersion])
   return await run('npm', ['pkg', 'get', 'version'])
+}
+
+async function conventionalRecommended() {
+  await conventionalRecommendedBump(
+    {
+      preset: `angular`,
+    },
+    (error, recommendation) => {
+      if (error) {
+        logError(error.message)
+        throw error
+      }
+      logInfo(recommendation.releaseType) // 'major'
+      return recommendation.releaseType
+    }
+  )
 }
 
 module.exports.runAction = runAction
