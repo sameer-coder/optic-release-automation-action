@@ -8821,7 +8821,6 @@ function conventionalRecommendedBump (optionsArgument, parserOptsArgument, cbArg
       throw Error('whatBump must be a function')
     }
 
-
     // TODO: For now we defer to `config.recommendedBumpOpts.parserOpts` if it exists, as our initial refactor
     // efforts created a `parserOpts` object under the `recommendedBumpOpts` object in each preset package.
     // In the future we want to merge differences found in `recommendedBumpOpts.parserOpts` into the top-level
