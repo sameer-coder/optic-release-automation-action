@@ -58663,6 +58663,7 @@ async function getBumpedVersionNumber({ inputs }) {
 async function getAutoBumpedVersion() {
   try {
     const { releaseType } = await conventionalRecommendedBumpAsync({ config })
+    console.log(`=-LOG-= ---> releaseType`, releaseType)
     return releaseType
   } catch (error) {
     core.setFailed(error.message)
