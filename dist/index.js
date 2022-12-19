@@ -58637,9 +58637,10 @@ const conventionalRecommendedBumpAsync = util.promisify(
   conventionalRecommendedBump
 )
 
+const autoInput = 'auto'
+
 async function runAction({ github, context, inputs, packageVersion }) {
   if (context.eventName === 'workflow_dispatch') {
-    console.log(`packageVersion is ${packageVersion}`)
     return openPr({ context, inputs, packageVersion })
   }
 
@@ -58650,11 +58651,9 @@ async function runAction({ github, context, inputs, packageVersion }) {
   logError('Unsupported event')
 }
 
-async function getBumpedVersionNumber({ github, context, inputs }) {
+async function getBumpedVersionNumber({ inputs }) {
   const newVersion =
-    inputs.semver === 'auto'
-      ? await getAutoBumpedVersion({ github, context })
-      : inputs.semver
+    inputs.semver === autoInput ? await getAutoBumpedVersion() : inputs.semver
 
   const run = runSpawn()
   await run('npm', ['version', '--no-git-tag-version', newVersion])
@@ -58675,8 +58674,6 @@ module.exports = {
   runAction,
   getBumpedVersionNumber,
 }
-
-getAutoBumpedVersion().catch(console.log)
 
 
 /***/ }),
