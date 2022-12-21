@@ -27849,14 +27849,11 @@ exports.publishToNpm = publishToNpm
 const semver = __nccwpck_require__(1383)
 const _truncate = __nccwpck_require__(4436)
 
-const md = __nccwpck_require__(8561)({ html: true }).use(
-  __nccwpck_require__(3792),
-  {
-    imageClass: '',
-    removeUnbalanced: true,
-    removeUnknown: true,
-  }
-)
+const md = __nccwpck_require__(8561)().use(__nccwpck_require__(3792), {
+  imageClass: '',
+  removeUnbalanced: true,
+  removeUnknown: true,
+})
 
 const PR_BODY_TRUNCATE_SIZE = 50000
 
