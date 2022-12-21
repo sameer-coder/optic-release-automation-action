@@ -24,6 +24,7 @@
     "lodash.truncate": "^4.4.2",
     "lodash.uniqwith": "^4.5.0",
     "markdown-it": "^13.0.1",
+    "markdown-it-sanitizer": "^0.4.3",
     "node-fetch": "^2.6.6",
     "p-map": "^4.0.0",
     "semver": "^7.3.8",

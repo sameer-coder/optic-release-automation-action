@@ -3,7 +3,7 @@
 const semver = require('semver')
 const _truncate = require('lodash.truncate')
 
-const md = require('markdown-it')()
+const md = require('markdown-it')().use(require('markdown-it-sanitizer'))
 
 const PR_BODY_TRUNCATE_SIZE = 50000
 
@@ -55,14 +55,13 @@ function getPRBody(
 
   const draftReleaseBody = draftRelease?.body || ''
   if (draftReleaseBody.length > PR_BODY_TRUNCATE_SIZE) {
-    const omissionText = 'm/slack-channel-github-team-sync/pull/548\\n'
+    const omissionText =
+      '> Some of these release notes have been truncated to respect Pull Request body size limits'
     draftRelease.body = _truncate(draftReleaseBody, {
       length: PR_BODY_TRUNCATE_SIZE,
       omission: omissionText,
     })
   }
-
-  // draftRelease.body = 'All text is truncated'
 
   const prBody = template({
     releaseMeta,
