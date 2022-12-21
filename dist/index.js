@@ -27670,14 +27670,14 @@ function getPRBody(
   const draftReleaseBody = draftRelease?.body || ''
   if (draftReleaseBody.length > PR_BODY_TRUNCATE_SIZE) {
     const omissionText =
-      '  Some of these release notes have been truncated to respect Pull Request body size limits'
+      '> Some of these release notes have been truncated to respect Pull Request body size limits'
     draftRelease.body = _truncate(draftReleaseBody, {
       length: PR_BODY_TRUNCATE_SIZE,
       omission: omissionText,
     })
   }
 
-  draftRelease.body = 'All text is truncated'
+  // draftRelease.body = 'All text is truncated'
 
   const prBody = template({
     releaseMeta,
