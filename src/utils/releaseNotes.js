@@ -3,13 +3,9 @@
 const semver = require('semver')
 const _truncate = require('lodash.truncate')
 
-const md = require('markdown-it')().use(require('markdown-it-sanitizer'), {
-  imageClass: '',
-  removeUnbalanced: true,
-  removeUnknown: true,
-})
+const md = require('markdown-it')()
 
-const PR_BODY_TRUNCATE_SIZE = 50000
+const PR_BODY_TRUNCATE_SIZE = 20000
 
 function getPrNumbersFromReleaseNotes(releaseNotes) {
   const parsedReleaseNotes = md.parse(releaseNotes, {})
