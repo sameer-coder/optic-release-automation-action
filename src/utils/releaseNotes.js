@@ -3,7 +3,14 @@
 const semver = require('semver')
 const _truncate = require('lodash.truncate')
 
-const md = require('markdown-it')().use(require('markdown-it-sanitizer'))
+const md = require('markdown-it')({ html: true }).use(
+  require('markdown-it-sanitizer'),
+  {
+    imageClass: '',
+    removeUnbalanced: true,
+    removeUnknown: true,
+  }
+)
 
 const PR_BODY_TRUNCATE_SIZE = 50000
 
