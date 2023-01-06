@@ -48,16 +48,17 @@ async function getAutoBumpedVersion(baseTag = null) {
   try {
     const run = runSpawn()
     await run('git', ['fetch', '--unshallow']) // by default optic does a shallow clone so we need to do this to get full commit history
+    await run('git', ['fetch', '--tags'])
 
     let latestTag = null
-    if (!baseTag) {
-      await run('git', ['fetch', '--tags'])
-      const allTags = await run('git', ['tag', '--sort=-creatordate'])
-      logInfo(`=-LOG-= ---> allTags ${allTags}`)
-      const tags = allTags.split('\n')
-      latestTag = tags[0] || null
-      logInfo(`=-LOG-= ---> latestTag ${latestTag}`)
-    }
+    // if (!baseTag) {
+    //   // await run('git', ['fetch', '--tags'])
+    //   const allTags = await run('git', ['tag', '--sort=-creatordate'])
+    //   logInfo(`=-LOG-= ---> allTags ${allTags}`)
+    //   const tags = allTags.split('\n')
+    //   latestTag = tags[0] || null
+    //   logInfo(`=-LOG-= ---> latestTag ${latestTag}`)
+    // }
 
     const tag = baseTag || latestTag
 
