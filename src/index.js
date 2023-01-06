@@ -49,7 +49,6 @@ async function getAutoBumpedVersion(baseTag) {
     if (baseTag) {
       const run = runSpawn()
       await run('git', ['fetch', '--unshallow'])
-      await run('git', ['fetch', '--tags'])
       logInfo(await run('git', ['tag']))
     }
     const result = await conventionalRecommendedBumpAsync(
