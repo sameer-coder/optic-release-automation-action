@@ -77962,10 +77962,15 @@ async function getAutoBumpedVersion(baseTag) {
       await run('git', ['fetch', '--tags'])
       logInfo(await run('git', ['tag']))
     }
-    const result = await conventionalRecommendedBumpAsync({
-      baseTag,
-      config: conventionalCommitsConfig,
-    })
+    const result = await conventionalRecommendedBumpAsync(
+      {
+        baseTag,
+        config: conventionalCommitsConfig,
+      },
+      {
+        warn: logInfo,
+      }
+    )
     logInfo(`Auto generated release type is ${JSON.stringify(result)}`)
     return result.releaseType
   } catch (error) {
