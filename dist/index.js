@@ -77954,7 +77954,7 @@ async function bumpVersion({ inputs }) {
   return await run('npm', ['pkg', 'get', 'version'])
 }
 
-async function getAutoBumpedVersion(baseTag) {
+async function getAutoBumpedVersion(baseTag = null) {
   try {
     const run = runSpawn()
     await run('git', ['fetch', '--unshallow'])
