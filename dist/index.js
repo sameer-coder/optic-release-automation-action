@@ -27382,6 +27382,7 @@ function getCommits ({ options, tag = '', parserOpts, whatBump, warn, cb }) {
 }
 
 function conventionalRecommendedBump (optionsArgument, parserOptsArgument, cbArgument) {
+  parserOptsArgument.warn(`....Inside function......`)
   if (typeof optionsArgument !== 'object') {
     throw new Error('The \'options\' argument must be an object.')
   }
@@ -27431,6 +27432,7 @@ function conventionalRecommendedBump (optionsArgument, parserOptsArgument, cbArg
     const warn = typeof parserOpts.warn === 'function' ? parserOpts.warn : noop
 
     if (options.baseTag) {
+      warn(`entered options.baseTag`)
       getCommits({ options, tag: options.baseTag, parserOpts, whatBump, warn, cb })
       return
     }
@@ -27441,6 +27443,7 @@ function conventionalRecommendedBump (optionsArgument, parserOptsArgument, cbArg
       tagPrefix: options.tagPrefix,
       skipUnstable: options.skipUnstable
     }, (err, tags) => {
+      warn(`tags is ${JSON.stringify(tags)}`)
       if (err) {
         return cb(err)
       }
@@ -28580,11 +28583,13 @@ module.exports = function gitSemverTags (opts, callback) {
     return
   }
 
+  console.log(`cmd is ${cmd}`)
   exec(cmd, options, function (err, data) {
     if (err) {
       callback(err)
       return
     }
+    console.log(`git tags data is ${data}`)
 
     const tags = []
     let tagPrefixRegexp
