@@ -47,11 +47,18 @@ async function bumpVersion({ inputs }) {
 async function getAutoBumpedVersion(baseTag = null) {
   try {
     const run = runSpawn()
-    await run('git', ['fetch', '--unshallow'])
-    const tags = await run('git', ['tag'])
-    logInfo(`tags split is ${tags.split('\n')}`)
-    const splitTags = tags.split('\n')
-    logInfo(`latest tag is ${splitTags[0]}`)
+    await run('git', ['fetch', '--unshallow']) // by default optic does a shallow clone so we need to do this to get full commit history
+
+    let latestTag = null
+    if (!baseTag) {
+      const allTags = await run('git', ['tag', '--sort=-creatordate'])
+      const tags = allTags.split('\n')
+      latestTag = tags[0] || null
+    }
+
+    const tag = baseTag || latestTag
+
+    logInfo(`Using ${tag} as base release tag for version bump`)
 
     const result = await conventionalRecommendedBumpAsync(
       {
