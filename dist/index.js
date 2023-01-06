@@ -77956,11 +77956,10 @@ async function bumpVersion({ inputs }) {
 
 async function getAutoBumpedVersion(baseTag) {
   try {
-    if (baseTag) {
-      const run = runSpawn()
-      await run('git', ['fetch', '--unshallow'])
-      logInfo(await run('git', ['tag']))
-    }
+    const run = runSpawn()
+    await run('git', ['fetch', '--unshallow'])
+    logInfo(await run('git', ['tag']))
+
     const result = await conventionalRecommendedBumpAsync(
       {
         baseTag,
