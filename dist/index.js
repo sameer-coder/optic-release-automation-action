@@ -77958,7 +77958,9 @@ async function getAutoBumpedVersion(baseTag = null) {
   try {
     const run = runSpawn()
     await run('git', ['fetch', '--unshallow'])
-    logInfo(await run('git', ['tag']))
+    const tags = await run('git', ['tag'])
+    logInfo(`tags is ${tags}`)
+    logInfo(`latest tag is ${tags[0]}`)
 
     const result = await conventionalRecommendedBumpAsync(
       {
