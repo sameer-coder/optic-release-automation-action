@@ -67,7 +67,7 @@ module.exports = async function ({ github, context, inputs }) {
     // We "always" delete the release branch, if anything fails, the whole
     // workflow has to be restarted from scratch.
     logInfo(`deleting ${branchName}`)
-    await run('git', ['push', 'origin', '--delete', branchName])
+    // await run('git', ['push', 'origin', '--delete', branchName])
   } catch (err) {
     // That's not a big problem, so we don't want to mark the action as failed.
     logWarning('Unable to delete the release branch')

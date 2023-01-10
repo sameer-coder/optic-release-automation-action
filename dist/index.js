@@ -78069,12 +78069,7 @@ const tryGetReleaseNotes = async (token, newVersion) => {
   }
 }
 
-const createDraftRelease = async (
-  inputs,
-  newVersion,
-  releaseNotes,
-  branchName
-) => {
+const createDraftRelease = async (inputs, newVersion, releaseNotes) => {
   try {
     const run = runSpawn()
     const releaseCommitHash = await run('git', ['rev-parse', 'HEAD'])
@@ -78086,7 +78081,6 @@ const createDraftRelease = async (
         method: 'POST',
         endpoint: 'release',
         body: {
-          target_commitish: branchName,
           version: newVersion,
           target: releaseCommitHash,
           generateReleaseNotes: releaseNotes ? false : true,
@@ -78260,7 +78254,7 @@ module.exports = async function ({ github, context, inputs }) {
     // We "always" delete the release branch, if anything fails, the whole
     // workflow has to be restarted from scratch.
     logInfo(`deleting ${branchName}`)
-    await run('git', ['push', 'origin', '--delete', branchName])
+    // await run('git', ['push', 'origin', '--delete', branchName])
   } catch (err) {
     // That's not a big problem, so we don't want to mark the action as failed.
     logWarning('Unable to delete the release branch')
