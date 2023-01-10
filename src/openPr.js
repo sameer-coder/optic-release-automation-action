@@ -43,7 +43,12 @@ const tryGetReleaseNotes = async (token, newVersion) => {
   }
 }
 
-const createDraftRelease = async (inputs, newVersion, releaseNotes) => {
+const createDraftRelease = async (
+  inputs,
+  newVersion,
+  releaseNotes,
+  branchName
+) => {
   try {
     const run = runSpawn()
     const releaseCommitHash = await run('git', ['rev-parse', 'HEAD'])
@@ -55,6 +60,7 @@ const createDraftRelease = async (inputs, newVersion, releaseNotes) => {
         method: 'POST',
         endpoint: 'release',
         body: {
+          target_commitish: branchName,
           version: newVersion,
           target: releaseCommitHash,
           generateReleaseNotes: releaseNotes ? false : true,
@@ -102,7 +108,8 @@ module.exports = async function ({ context, inputs, packageVersion }) {
   const draftRelease = await createDraftRelease(
     inputs,
     newVersion,
-    releaseNotes
+    releaseNotes,
+    branchName
   )
 
   logInfo(`New version ${newVersion}`)
