@@ -7,8 +7,8 @@ const { AUTO_INPUT } = require('./const')
 const { execWithOutput } = require('./utils/execWithOutput')
 const { logError, logInfo } = require('./log')
 const util = require('util')
-const conventionalCommitsConfig = require('conventional-changelog/conventional-changelog-conventionalcommits')
-const conventionalRecommendedBump = require('conventional-changelog/conventional-recommended-bump')
+const conventionalCommitsConfig = require('conventional-changelog-monorepo/conventional-changelog-conventionalcommits')
+const conventionalRecommendedBump = require('conventional-changelog-monorepo/conventional-recommended-bump')
 const conventionalRecommendedBumpAsync = util.promisify(
   conventionalRecommendedBump
 )
