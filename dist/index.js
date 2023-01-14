@@ -28127,8 +28127,8 @@ const { AUTO_INPUT } = __nccwpck_require__(6818)
 const { execWithOutput } = __nccwpck_require__(8632)
 const { logError, logInfo } = __nccwpck_require__(653)
 const util = __nccwpck_require__(3837)
-const conventionalCommitsConfig = __nccwpck_require__(3370)
-const conventionalRecommendedBump = __nccwpck_require__(3704)
+const conventionalCommitsConfig = __nccwpck_require__(7609)
+const conventionalRecommendedBump = __nccwpck_require__(2949)
 const conventionalRecommendedBumpAsync = util.promisify(
   conventionalRecommendedBump
 )
@@ -29351,18 +29351,18 @@ exports.tagVersionInGit = tagVersionInGit
 
 /***/ }),
 
-/***/ 3370:
+/***/ 7609:
 /***/ ((module) => {
 
-module.exports = eval("require")("conventional-changelog-monorepo/conventional-changelog-conventionalcommits");
+module.exports = eval("require")("conventional-changelog/conventional-changelog-conventionalcommits");
 
 
 /***/ }),
 
-/***/ 3704:
+/***/ 2949:
 /***/ ((module) => {
 
-module.exports = eval("require")("conventional-changelog-monorepo/conventional-recommended-bump");
+module.exports = eval("require")("conventional-changelog/conventional-recommended-bump");
 
 
 /***/ }),
