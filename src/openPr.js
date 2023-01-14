@@ -45,9 +45,7 @@ const tryGetReleaseNotes = async (token, newVersion) => {
 
 const createDraftRelease = async (inputs, newVersion, releaseNotes) => {
   try {
-    const releaseCommitHash = await execWithOutput('git', ['rev-parse', 'HEAD'])
-
-    logInfo(`Creating draft release from commit: ${releaseCommitHash}`)
+    logInfo(`Creating draft release for version ${newVersion}`)
 
     const { data: draftRelease } = await callApi(
       {
@@ -55,7 +53,6 @@ const createDraftRelease = async (inputs, newVersion, releaseNotes) => {
         endpoint: 'release',
         body: {
           version: newVersion,
-          target: releaseCommitHash,
           generateReleaseNotes: releaseNotes ? false : true,
           ...(releaseNotes && { releaseNotes }),
         },
