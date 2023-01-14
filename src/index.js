@@ -3,9 +3,10 @@
 const openPr = require('./openPr')
 const updatePR = require('./updatePr')
 const release = require('./release')
-const { logError } = require('./log')
+const { logError, logInfo } = require('./log')
 
 module.exports = async function ({ github, context, inputs, packageVersion }) {
+  logInfo(`context.eventName = ${context.eventName}`)
   if (context.eventName === 'workflow_dispatch') {
     return openPr({ context, inputs, packageVersion })
   }
