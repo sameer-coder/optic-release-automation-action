@@ -112,6 +112,15 @@ runs:
 
     - name: Release the package
       uses: actions/github-script@v6
+      if: ${{ github.event_name == 'workflow_dispatch' }}
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          const script = require('${{ github.action_path }}/dist/index.js')
+          await script({ github, context, inputs: ${{ toJSON(inputs) }} })
+
+    - name: Update PR
+      uses: actions/github-script@v6
       if: ${{ github.event_name == 'push' }}
       with:
         github-token: ${{ inputs.github-token }}
