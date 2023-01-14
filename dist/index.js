@@ -28573,6 +28573,12 @@ module.exports = async function ({ context, inputs }) {
   const opticPr = await getOpticPr({ octokit, repo, owner })
   logInfo(`=-LOG-= ---> opticPr - ${opticPr}`)
 
+  if (!opticPr) {
+    throw new Error(
+      `Optic PR not found. Please run the workflow manually to create a PR`
+    ) // todo: Improve message
+  }
+
   // check if branch is same
   if (workflowBranch !== opticPr.base.ref) {
     throw new Error(`Skipping release bump. Base branch of PR is different`) // todo: Improve message
