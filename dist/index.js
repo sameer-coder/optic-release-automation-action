@@ -28524,7 +28524,10 @@ const getOpticPr = async ({ octokit, repo, owner }) => {
       per_page: 100,
     })
 
+    logInfo(`ierator is ${iterator}`)
+
     for await (const { data } of iterator) {
+      logInfo(`data is ${JSON.stringify(data)}`)
       for (const pr of data) {
         const { title = '', body = '', user = {} } = pr
         logInfo(`=-LOG-= ---> pr item - JSON.stringify(pr)`)
@@ -28535,6 +28538,7 @@ const getOpticPr = async ({ octokit, repo, owner }) => {
           !body ||
           user.type !== BOT_ACCOUNT
         ) {
+          logInfo(`skipping PR ${title}`)
           continue
         }
         return pr
