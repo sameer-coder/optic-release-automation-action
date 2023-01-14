@@ -25,10 +25,9 @@ const getOpticPr = async ({ octokit, repo, owner }) => {
     logInfo(`ierator is ${iterator}`)
 
     for await (const { data } of iterator) {
-      logInfo(`data is ${JSON.stringify(data)}`)
       for (const pr of data) {
         const { title = '', body = '', user = {} } = pr
-        logInfo(`=-LOG-= ---> pr item - JSON.stringify(pr)`)
+        logInfo(`=-LOG-= ---> pr item - ${JSON.stringify(title)}`)
 
         // Skip other PRs
         if (
@@ -69,7 +68,7 @@ module.exports = async function ({ context, inputs }) {
 
   // Get optic PR
   const opticPr = await getOpticPr({ octokit, repo, owner })
-  logInfo(`=-LOG-= ---> opticPr - ${opticPr}`)
+  logInfo(`=-LOG-= ---> opticPr - ${JSON.stringify(opticPr)}`)
 
   if (!opticPr) {
     throw new Error(
