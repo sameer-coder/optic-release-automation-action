@@ -112,7 +112,7 @@ runs:
 
     - name: Release the package
       uses: actions/github-script@v6
-      if: ${{ github.event_name == 'pull_request' }}
+      if: ${{ github.event_name == 'push' }}
       with:
         github-token: ${{ inputs.github-token }}
         script: |
