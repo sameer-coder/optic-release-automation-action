@@ -32,4 +32,4 @@ jobs:
           semver: ${{ github.event.inputs.semver }}
           base-tag: ${{ github.event.inputs.baseTag }}
           sync-semver-tags: 'true'
-          build-command: npm ci
+          build-command: HUSKY=0 npm ci
