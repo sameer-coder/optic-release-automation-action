@@ -79363,18 +79363,32 @@ module.exports = async function ({ context, inputs, packageVersion }) {
 
   const branchName = `release/${newVersion}`
 
+  logInfo(`branchName - ${branchName}`)
+
   const messageTemplate = inputs['commit-message']
+  logInfo(`Before git checkout`)
   await execWithOutput('git', ['checkout', '-b', branchName])
+  logInfo(`checkout complete`)
+
+  logInfo(`Before git add`)
   await execWithOutput('git', ['add', '-A'])
+  logInfo(`add complete`)
+
+  logInfo(`Before git commit`)
   await execWithOutput('git', [
     'commit',
     '-m',
     `"${transformCommitMessage(messageTemplate, newVersion)}"`,
   ])
+  logInfo(`commit complete`)
 
+  logInfo(`Before git push`)
   await execWithOutput('git', ['push', 'origin', branchName])
+  logInfo(`push complete`)
 
+  logInfo(`trying to get rn`)
   const releaseNotes = await tryGetReleaseNotes(token, baseRelease, newVersion)
+  logInfo(`rn complete`)
 
   const draftRelease = await createDraftRelease(
     inputs,
