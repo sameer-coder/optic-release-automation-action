@@ -106,6 +106,8 @@ module.exports = async function ({ context, inputs, packageVersion }) {
   logInfo(`add complete`)
 
   logInfo(`Before git commit`)
+  logInfo(`messageTemplate ${messageTemplate}`)
+  logInfo(`newVersion ${newVersion}`)
   await execWithOutput('git', [
     'commit',
     '-m',
