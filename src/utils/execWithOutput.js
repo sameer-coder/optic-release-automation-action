@@ -45,8 +45,6 @@ async function execWithOutput(cmd, args, { cwd } = {}) {
     },
   }
 
-  logInfo(`cmd is ${cmd}`)
-  logInfo(`args is ${args}`)
   const code = await exec(cmd, args, options)
 
   output += stdoutDecoder.end()

@@ -79366,19 +79366,14 @@ module.exports = async function ({ context, inputs, packageVersion }) {
   logInfo(`branchName - ${branchName}`)
 
   const messageTemplate = inputs['commit-message']
-  logInfo(`Before git checkout`)
   await execWithOutput('git', ['checkout', '-b', branchName])
-  logInfo(`checkout complete`)
 
-  logInfo(`Before git add`)
   await execWithOutput('git', ['add', '-A'])
-  logInfo(`add complete`)
 
   logInfo(`Before git commit`)
-  logInfo(`messageTemplate ${messageTemplate}`)
-  logInfo(`newVersion ${newVersion}`)
   await execWithOutput('git', [
     'commit',
+    '--no-verify',
     '-m',
     `"${transformCommitMessage(messageTemplate, newVersion)}"`,
   ])
@@ -79838,8 +79833,6 @@ async function execWithOutput(cmd, args, { cwd } = {}) {
     },
   }
 
-  logInfo(`cmd is ${cmd}`)
-  logInfo(`args is ${args}`)
   const code = await exec(cmd, args, options)
 
   output += stdoutDecoder.end()
