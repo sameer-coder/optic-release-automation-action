@@ -79796,6 +79796,7 @@ module.exports = transformCommitMessage
 const { StringDecoder } = __nccwpck_require__(6915)
 
 const { exec } = __nccwpck_require__(1514)
+const { logInfo } = __nccwpck_require__(653)
 
 /**
  *
@@ -79837,6 +79838,8 @@ async function execWithOutput(cmd, args, { cwd } = {}) {
     },
   }
 
+  logInfo(`cmd is ${cmd}`)
+  logInfo(`args is ${args}`)
   const code = await exec(cmd, args, options)
 
   output += stdoutDecoder.end()
